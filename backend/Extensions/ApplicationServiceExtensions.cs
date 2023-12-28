@@ -1,9 +1,9 @@
-﻿using API.Data;
-using API.Interfaces;
-using API.Services;
+﻿using Backend.Data;
+using Backend.Interfaces;
+using Backend.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Extensions;
+namespace Backend.Extensions;
 
 public static class ApplicationServiceExtensions
 {

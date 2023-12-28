@@ -1,10 +1,10 @@
-﻿using API.Data;
-using API.Entities;
+﻿using Backend.Data;
+using Backend.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Controllers;
+namespace Backend.Controllers;
 
 [Authorize]
 public class UsersController(DataContext context) : BaseApiController

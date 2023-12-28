@@ -1,4 +1,4 @@
-using API.Extensions;
+using Backend.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace API.Data.Helpers;
+namespace Backend.Data.Helpers;
 
 readonly struct ComputedHash(byte[] hash, byte[] salt)
 {

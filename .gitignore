@@ -489,5 +489,5 @@ StudentAssets/
 StudentAssets/*
 appsettings.json
 appsettings.*.json
-API/datingapp.db-shm
-API/datingapp.db-wal
+backend/datingapp.db-shm
+backend/datingapp.db-wal

@@ -1,14 +1,14 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using API.Data;
-using API.Data.Helpers;
-using API.DTOs;
-using API.Entities;
-using API.Interfaces;
+using Backend.Data;
+using Backend.Data.Helpers;
+using Backend.DTOs;
+using Backend.Entities;
+using Backend.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Controllers;
+namespace Backend.Controllers;
 
 public class AccountController(DataContext context, ITokenService tokenService) : BaseApiController
 {
