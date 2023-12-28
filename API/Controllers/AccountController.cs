@@ -4,17 +4,19 @@ using API.Data;
 using API.Data.Helpers;
 using API.DTOs;
 using API.Entities;
+using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class AccountController(DataContext context) : BaseApiController
+public class AccountController(DataContext context, ITokenService tokenService) : BaseApiController
 {
     private readonly DataContext _context = context;
+    private readonly ITokenService _tokenService = tokenService;
 
     [HttpPost("register")] // POST: api/account/register
-    public async Task<ActionResult<AppUser>> RegisterUser(RegisterUserDTO credentials)
+    public async Task<ActionResult<UserDTO>> RegisterUser(RegisterUserDTO credentials)
     {
         if (await UserExists(credentials.Username))
         {
@@ -33,11 +35,15 @@ public class AccountController(DataContext context) : BaseApiController
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        return user;
+        return new UserDTO
+        {
+            Username = user.UserName,
+            Token = _tokenService.CreateToken(user)
+        };
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AppUser>> LoginUser(LoginDTO credentials)
+    public async Task<ActionResult<UserDTO>> LoginUser(LoginDTO credentials)
     {
         var user = await _context.Users.SingleOrDefaultAsync(user => user.UserName == credentials.Username);
 
@@ -51,7 +57,11 @@ public class AccountController(DataContext context) : BaseApiController
             return Unauthorized(new { Errors = new { Credentials = "Username or password is incorrect." } });
         }
 
-        return user;
+        return new UserDTO
+        {
+            Username = user.UserName,
+            Token = _tokenService.CreateToken(user)
+        };
     }
 
     private async Task<bool> UserExists(string username)
