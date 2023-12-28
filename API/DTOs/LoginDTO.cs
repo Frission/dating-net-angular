@@ -2,7 +2,7 @@
 
 namespace API.DTOs;
 
-public class RegisterUserDTO
+public class LoginDTO
 {
     [Required]
     [StringLength(maximumLength: 100, MinimumLength = 3)]
