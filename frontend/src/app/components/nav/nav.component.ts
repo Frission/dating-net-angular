@@ -4,11 +4,13 @@ import { FormsModule } from "@angular/forms"
 import { BsDropdownModule } from "ngx-bootstrap/dropdown"
 import { LoginRequest } from "../../model/request/LoginRequest"
 import { AccountService } from "../../services/account.service"
+import { Router, RouterModule } from "@angular/router"
+import { ToastrService } from "ngx-toastr"
 
 @Component({
     selector: "app-nav",
     standalone: true,
-    imports: [FormsModule, BsDropdownModule, AsyncPipe],
+    imports: [FormsModule, BsDropdownModule, AsyncPipe, RouterModule],
     templateUrl: "./nav.component.html",
     styleUrl: "./nav.component.scss",
 })
@@ -19,13 +21,27 @@ export class NavComponent {
     }
     username: string = ""
 
-    constructor(protected readonly accountService: AccountService) {}
+    constructor(
+        protected readonly accountService: AccountService,
+        private readonly router: Router,
+        private readonly toastr: ToastrService,
+    ) {}
 
     login() {
-        this.accountService.login(this.model).subscribe()
+        this.accountService.login(this.model).subscribe({
+            next: () => {
+                this.router.navigateByUrl("/members")
+                this.toastr.success("Successfully logged in!")
+            },
+            error: (errMessage) => {
+                this.toastr.error(errMessage)
+            }
+        })
     }
 
     logout() {
         this.accountService.logout()
+        this.router.navigateByUrl("/")
+        this.toastr.success("Successfully logged out.")
     }
 }

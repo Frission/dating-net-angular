@@ -22,7 +22,7 @@ export class AccountService {
         return this.httpClient.post<LoginResponse>(this.baseUrl + "account/login", request).pipe(
             catchError((err) => {
                 console.error(err)
-                return EMPTY
+                throw err?.error?.errors?.credentials ?? "An error occurred while logging in."
             }),
             tap((response) => {
                 if (response) {
