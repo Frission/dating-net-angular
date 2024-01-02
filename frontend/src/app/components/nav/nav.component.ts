@@ -6,6 +6,7 @@ import { LoginRequest } from "../../model/request/LoginRequest"
 import { AccountService } from "../../services/account.service"
 import { Router, RouterModule } from "@angular/router"
 import { ToastrService } from "ngx-toastr"
+import { environment } from "../../../environments/environment"
 
 @Component({
     selector: "app-nav",
@@ -21,6 +22,8 @@ export class NavComponent {
     }
     username: string = ""
 
+    env = environment.env
+
     constructor(
         protected readonly accountService: AccountService,
         private readonly router: Router,
@@ -34,10 +37,7 @@ export class NavComponent {
                 next: () => {
                     this.router.navigateByUrl("/members")
                     this.toastr.success("Successfully logged in!")
-                },
-                error: (errMessage) => {
-                    this.toastr.error(errMessage)
-                },
+                }
             })
     }
 

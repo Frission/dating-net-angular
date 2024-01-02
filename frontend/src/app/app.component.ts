@@ -10,7 +10,7 @@ import { AccountService } from "./services/account.service"
 @Component({
     selector: "app-root",
     standalone: true,
-    imports: [CommonModule, RouterOutlet, HttpClientModule, TooltipModule, NavComponent, HomeComponent],
+    imports: [CommonModule, RouterOutlet, TooltipModule, NavComponent, HomeComponent],
     templateUrl: "./app.component.html",
     styleUrl: "./app.component.scss",
 })
