@@ -1,4 +1,4 @@
-import { AsyncPipe } from "@angular/common"
+import { AsyncPipe, TitleCasePipe } from "@angular/common"
 import { Component } from "@angular/core"
 import { FormsModule } from "@angular/forms"
 import { BsDropdownModule } from "ngx-bootstrap/dropdown"
@@ -10,7 +10,7 @@ import { ToastrService } from "ngx-toastr"
 @Component({
     selector: "app-nav",
     standalone: true,
-    imports: [FormsModule, BsDropdownModule, AsyncPipe, RouterModule],
+    imports: [FormsModule, BsDropdownModule, AsyncPipe, RouterModule, TitleCasePipe],
     templateUrl: "./nav.component.html",
     styleUrl: "./nav.component.scss",
 })
@@ -28,20 +28,22 @@ export class NavComponent {
     ) {}
 
     login() {
-        this.accountService.login(this.model).subscribe({
-            next: () => {
-                this.router.navigateByUrl("/members")
-                this.toastr.success("Successfully logged in!")
-            },
-            error: (errMessage) => {
-                this.toastr.error(errMessage)
-            }
-        })
+        this.accountService
+            .login({ username: this.model.username.trim(), password: this.model.password.trim() })
+            .subscribe({
+                next: () => {
+                    this.router.navigateByUrl("/members")
+                    this.toastr.success("Successfully logged in!")
+                },
+                error: (errMessage) => {
+                    this.toastr.error(errMessage)
+                },
+            })
     }
 
     logout() {
         this.accountService.logout()
         this.router.navigateByUrl("/")
-        this.toastr.success("Successfully logged out.")
+        this.toastr.info("Successfully logged out.")
     }
 }
