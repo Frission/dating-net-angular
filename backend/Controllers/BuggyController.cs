@@ -4,7 +4,7 @@ using Backend.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace backend;
+namespace Backend.Controllers;
 
 public class BuggyController(DataContext context) : BaseApiController
 {
@@ -30,7 +30,7 @@ public class BuggyController(DataContext context) : BaseApiController
     {
         var thing = _context.Users.Find(-1);
 
-        // cause an exception manually, impresive that the compiler can figure out that it will happen
+        // cause an exception manually, it's nice that the compiler can figure out that it will happen
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8604 // Possible null reference argument.
         var causeException = thing.ToString();
