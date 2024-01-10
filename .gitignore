@@ -491,3 +491,4 @@ appsettings.json
 appsettings.*.json
 backend/datingapp.db-shm
 backend/datingapp.db-wal
+frontend/ssl
