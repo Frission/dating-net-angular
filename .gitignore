@@ -489,3 +489,4 @@ StudentAssets/
 StudentAssets/*
 backend/datingapp.db-shm
 backend/datingapp.db-wal
+frontend/ssl
