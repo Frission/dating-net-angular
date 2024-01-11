@@ -1,4 +1,5 @@
 ﻿using Backend.Data;
+using Backend.Data.Repositories;
 using Backend.Interfaces;
 using Backend.Services;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +12,18 @@ public static class ApplicationServiceExtensions
     {
         services.AddCors();
 
+        // data contexts
         services.AddDbContext<DataContext>(options =>
         {
             options.UseSqlite(config.GetConnectionString("DefaultConnection"));
         });
 
+        // repositories
+        services.AddScoped<IUserRepository, UserRepository>();
+
+        // rest
         services.AddScoped<ITokenService, TokenService>();
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         return services;
     }
