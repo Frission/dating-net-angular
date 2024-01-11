@@ -1,5 +1,7 @@
+using Backend.Data;
 using Backend.Errors;
 using Backend.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,5 +40,19 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+try
+{
+    var dataContext = services.GetRequiredService<DataContext>();
+    await dataContext.Database.MigrateAsync();
+    await Seed.SeedUsers(dataContext);
+}
+catch (Exception ex)
+{
+    var logger = services.GetService<ILogger<Program>>();
+    logger?.LogError(ex, "An error occurred during migration");
+}
 
 app.Run();
