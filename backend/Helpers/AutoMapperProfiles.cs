@@ -1,6 +1,7 @@
 using AutoMapper;
 using Backend.DTOs;
 using Backend.Entities;
+using Backend.Extensions;
 
 namespace Backend.Helpers;
 
@@ -18,6 +19,12 @@ public class AutoMapperProfiles : Profile
                     (source.Photos
                         .FirstOrDefault(photo => photo.IsMain) ?? new Photo { Url = null! }
                     ).Url
+                )
+            )
+            .ForMember(
+                destination => destination.Age,
+                options => options.MapFrom(source =>
+                    source.DateOfBirth.CalculateAge()
                 )
             );
         CreateMap<Photo, PhotoDTO>();

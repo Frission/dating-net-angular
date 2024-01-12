@@ -1,12 +1,16 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Backend.DTOs;
 using Backend.Entities;
 using Backend.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Data.Repositories;
 
-public class UserRepository(DataContext context) : IUserRepository
+public class UserRepository(DataContext context, IMapper mapper) : IUserRepository
 {
     private readonly DataContext _context = context;
+    private readonly IMapper _mapper = mapper;
 
     public async Task<AppUser?> GetUserByIdAsync(int id)
     {
@@ -35,5 +39,20 @@ public class UserRepository(DataContext context) : IUserRepository
     public void Update(AppUser user)
     {
         _context.Entry(user).State = EntityState.Modified;
+    }
+
+    public async Task<MemberDTO?> GetMemberAsync(string username)
+    {
+        return await _context.Users
+            .Where(x => x.UserName == username)
+            .ProjectTo<MemberDTO>(_mapper.ConfigurationProvider)
+            .SingleOrDefaultAsync();
+    }
+
+    public async Task<IEnumerable<MemberDTO>> GetMembersAsync()
+    {
+        return await _context.Users
+            .ProjectTo<MemberDTO>(_mapper.ConfigurationProvider)
+            .ToListAsync();
     }
 }

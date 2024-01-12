@@ -18,15 +18,12 @@ public class UsersController(IUserRepository userRepository, IMapper mapper) : B
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers()
     {
-        var users = await _userRepository.GetUsersAsync();
-        var response = _mapper.Map<IEnumerable<MemberDTO>>(users);
-        return Ok(response);
+        return Ok(await _userRepository.GetMembersAsync());
     }
 
     [HttpGet("{username}")] // /api/users/lisa
     public async Task<ActionResult<MemberDTO?>> GetUser(string username)
     {
-        var user = await _userRepository.GetUserByUsernameAsync(username);
-        return _mapper.Map<MemberDTO>(user);
+        return await _userRepository.GetMemberAsync(username);
     }
 }
