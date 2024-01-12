@@ -1,1 +1,7 @@
-<p>member-list works!</p>
+<div class="row">
+    <div class="col-2 cards-list">
+        @for (member of members; track $index) {
+            <app-member-card [member]="member" />
+        }
+    </div>
+</div>

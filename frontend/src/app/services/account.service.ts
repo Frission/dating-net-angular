@@ -5,6 +5,7 @@ import { LoginResponse } from "../model/response/LoginResponse"
 import { LoginRequest } from "../model/request/LoginRequest"
 import { User } from "../model/User"
 import { RegisterRequest } from "../model/request/RegisterRequest"
+import { environment } from "../../environments/environment"
 
 @Injectable({ providedIn: "root" })
 export class AccountService {
@@ -13,7 +14,7 @@ export class AccountService {
         return this._currentUser.asObservable()
     }
 
-    private baseUrl: string = "https://localhost:5001/api/"
+    private readonly baseUrl: string = environment.apiUrl
     private readonly localStorageKey = "user"
 
     constructor(private readonly httpClient: HttpClient) {}
