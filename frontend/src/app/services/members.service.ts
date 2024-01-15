@@ -12,10 +12,14 @@ export class MembersService {
     constructor(private readonly httpClient: HttpClient) {}
 
     getMember(username: string) {
-        return this.httpClient.get<Member>((this.baseUrl + "users/" + username))
+        return this.httpClient.get<Member>(this.baseUrl + "users/" + username)
     }
 
     getMembers() {
         return this.httpClient.get<Array<Member>>(this.baseUrl + "users")
+    }
+
+    updateMember(member: Member) {
+        return this.httpClient.put(this.baseUrl + "users", member)
     }
 }

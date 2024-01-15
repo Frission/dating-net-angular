@@ -7,11 +7,12 @@ import { provideToastr } from "ngx-toastr"
 import { routes } from "./app.routes"
 import { errorInterceptor } from "./interceptors/error.interceptor"
 import { authInterceptor } from "./interceptors/auth.interceptor"
+import { loadingInterceptor } from "./interceptors/loading.interceptor"
 
 export const appConfig: ApplicationConfig = {
     providers: [
         provideRouter(routes),
-        provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
+        provideHttpClient(withInterceptors([errorInterceptor, authInterceptor, loadingInterceptor])),
         provideAnimations(),
         provideToastr({ positionClass: "toast-bottom-right" }),
     ],
