@@ -10,6 +10,7 @@ export interface MemberResponse {
     lastActive?: string
     gender?: string 
     introduction?: string
+    lookingFor?: string
     interests?: string
     city?: string
     country?: string
