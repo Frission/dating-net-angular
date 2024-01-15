@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core"
-import { MemberResponse } from "../../../model/response/MemberResponse"
+import { Member } from "../../../model/response/Member"
 import { MembersService } from "../../../services/members.service"
 import { MemberCardComponent } from "../member-card/member-card.component"
 
@@ -11,7 +11,7 @@ import { MemberCardComponent } from "../member-card/member-card.component"
     styleUrl: "./member-list.component.scss",
 })
 export class MemberListComponent implements OnInit {
-    members: Array<MemberResponse> = []
+    members: Array<Member> = []
 
     constructor(private readonly memberService: MembersService) {}
 

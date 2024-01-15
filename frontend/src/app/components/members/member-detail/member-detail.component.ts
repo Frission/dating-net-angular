@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core"
-import { MemberResponse } from "../../../model/response/MemberResponse"
+import { Member } from "../../../model/response/Member"
 import { MembersService } from "../../../services/members.service"
 import { ActivatedRoute } from "@angular/router"
 import { TabsModule } from "ngx-bootstrap/tabs"
@@ -13,7 +13,7 @@ import { GalleryItem, GalleryModule, ImageItem } from "ng-gallery"
     styleUrl: "./member-detail.component.scss",
 })
 export class MemberDetailComponent implements OnInit {
-    member: MemberResponse | undefined
+    member: Member | undefined
     images: Array<GalleryItem> = []
 
     constructor(

@@ -1,6 +1,6 @@
-import { PhotoResponse } from "./PhotoResponse"
+import { Photo } from "./Photo"
 
-export interface MemberResponse {
+export interface Member {
     id: number
     userName: string
     age?: number
@@ -14,7 +14,7 @@ export interface MemberResponse {
     interests?: string
     city?: string
     country?: string
-    photos: Array<PhotoResponse>
+    photos: Array<Photo>
 }
 
 

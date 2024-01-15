@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core"
 import { environment } from "../../environments/environment"
 import { HttpClient, HttpHeaders } from "@angular/common/http"
-import { MemberResponse } from "../model/response/MemberResponse"
+import { Member } from "../model/response/Member"
 
 @Injectable({
     providedIn: "root",
@@ -12,10 +12,10 @@ export class MembersService {
     constructor(private readonly httpClient: HttpClient) {}
 
     getMember(username: string) {
-        return this.httpClient.get<MemberResponse>((this.baseUrl + "users/" + username))
+        return this.httpClient.get<Member>((this.baseUrl + "users/" + username))
     }
 
     getMembers() {
-        return this.httpClient.get<Array<MemberResponse>>(this.baseUrl + "users")
+        return this.httpClient.get<Array<Member>>(this.baseUrl + "users")
     }
 }

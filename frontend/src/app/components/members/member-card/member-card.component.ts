@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core"
 import { RouterModule } from "@angular/router"
-import { MemberResponse } from "../../../model/response/MemberResponse"
+import { Member } from "../../../model/response/Member"
 
 @Component({
     selector: "app-member-card",
@@ -10,5 +10,5 @@ import { MemberResponse } from "../../../model/response/MemberResponse"
     styleUrl: "./member-card.component.scss",
 })
 export class MemberCardComponent {
-    @Input({ required: true }) member: MemberResponse | undefined
+    @Input({ required: true }) member: Member | undefined
 }
