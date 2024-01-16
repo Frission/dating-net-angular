@@ -1,5 +1,6 @@
 ﻿using Backend.Data;
 using Backend.Data.Repositories;
+using Backend.Helpers;
 using Backend.Interfaces;
 using Backend.Services;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +24,9 @@ public static class ApplicationServiceExtensions
 
         // rest
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IPhotoService, PhotoService>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
+        
         return services;
     }
 }
