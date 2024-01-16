@@ -7,11 +7,12 @@ import { User } from "../../../model/User"
 import { Member } from "../../../model/response/Member"
 import { AccountService } from "../../../services/account.service"
 import { MembersService } from "../../../services/members.service"
+import { PhotoEditorComponent } from "../photo-editor/photo-editor.component"
 
 @Component({
     selector: "app-member-edit",
     standalone: true,
-    imports: [FormsModule, TabsModule],
+    imports: [FormsModule, TabsModule, PhotoEditorComponent],
     templateUrl: "./member-edit.component.html",
     styleUrl: "./member-edit.component.scss",
 })
