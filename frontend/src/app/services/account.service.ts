@@ -25,12 +25,7 @@ export class AccountService {
                 console.error(err)
                 throw err?.error?.errors?.credentials ?? "An error occurred while logging in."
             }),
-            tap((response) => {
-                if (response) {
-                    localStorage.setItem(this.localStorageKey, JSON.stringify(response))
-                    this.setCurrentUser(response)
-                }
-            }),
+            tap(this.onLoginSuccess.bind(this)),
         )
     }
 
@@ -45,17 +40,15 @@ export class AccountService {
                 console.error(err)
                 return EMPTY
             }),
-            tap((response) => {
-                if (response) {
-                    localStorage.setItem(this.localStorageKey, JSON.stringify(response))
-                    this.setCurrentUser(response)
-                }
-            }),
+            tap(this.onLoginSuccess.bind(this)),
         )
     }
 
     onLoginSuccess(response: LoginResponse) {
-        
+        if (response) {
+            localStorage.setItem(this.localStorageKey, JSON.stringify(response))
+            this.setCurrentUser(response)
+        }
     }
 
     checkCurrentUser() {

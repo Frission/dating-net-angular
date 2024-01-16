@@ -22,8 +22,9 @@
         </ul>
 
         @if (accountService.currentUser$ | async) {
+            <img [src]="photoUrl ?? './assets/user.png'" alt="user photo">
             <div dropdown class="dropdown">
-                <a dropdownToggle class="dropdown-toggle text-light text-decoration-none"
+                <a dropdownToggle class="dropdown-toggle text-light text-decoration-none ms-2"
                     >Welcome {{ (accountService.currentUser$ | async)?.username | titlecase }}</a
                 >
                 <div *dropdownMenu class="dropdown-menu">

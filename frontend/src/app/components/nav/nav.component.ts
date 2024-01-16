@@ -1,5 +1,5 @@
 import { AsyncPipe, TitleCasePipe } from "@angular/common"
-import { Component } from "@angular/core"
+import { Component, OnInit } from "@angular/core"
 import { FormsModule } from "@angular/forms"
 import { BsDropdownModule } from "ngx-bootstrap/dropdown"
 import { LoginRequest } from "../../model/request/LoginRequest"
@@ -15,12 +15,13 @@ import { environment } from "../../../environments/environment"
     templateUrl: "./nav.component.html",
     styleUrl: "./nav.component.scss",
 })
-export class NavComponent {
+export class NavComponent implements OnInit {
     model: LoginRequest = {
         username: "",
         password: "",
     }
     username: string = ""
+    photoUrl: string | undefined
 
     env = environment.env
 
@@ -29,6 +30,16 @@ export class NavComponent {
         private readonly router: Router,
         private readonly toastr: ToastrService,
     ) {}
+
+    ngOnInit(): void {
+        this.accountService.currentUser$.subscribe({
+            next: user => {
+                if(user) {
+                    this.photoUrl = user.photoUrl
+                }
+            }
+        })
+    }
 
     login() {
         this.accountService
