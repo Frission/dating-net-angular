@@ -59,7 +59,7 @@ export class AccountService {
         }
     }
 
-    private setCurrentUser(user: User) {
+    setCurrentUser(user: User) {
         this._currentUser.next(user)
     }
 }

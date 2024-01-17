@@ -6,6 +6,8 @@ import { environment } from "../../../../environments/environment"
 import { AccountService } from "../../../services/account.service"
 import { take } from "rxjs"
 import { User } from "../../../model/User"
+import { Photo } from "../../../model/response/Photo"
+import { MembersService } from "../../../services/members.service"
 
 @Component({
     selector: "app-photo-editor",
@@ -23,16 +25,35 @@ export class PhotoEditorComponent implements OnInit {
     private readonly baseUrl = environment.apiUrl
     private user: User | undefined
 
-
-    constructor(private readonly accountService: AccountService) {
+    constructor(
+        private readonly accountService: AccountService,
+        private readonly memberService: MembersService,
+    ) {
         this.accountService.currentUser$.pipe(take(1)).subscribe({
             next: (user) => {
                 if (user != null) this.user = user
             },
         })
     }
+
     ngOnInit(): void {
         this.initializeUploader()
+    }
+
+    setMainPhoto(photo: Photo) {
+        this.memberService.setMainPhoto(photo.id).subscribe({
+            next: () => {
+                if (this.user && this.member) {
+                    this.user.photoUrl = photo.url
+                    this.member.photoUrl = photo.url
+                    this.accountService.setCurrentUser(this.user)
+                    this.member.photos.forEach((p) => {
+                        if (p.isMain) p.isMain = false
+                        if (p.id == photo.id) p.isMain = true
+                    })
+                }
+            },
+        })
     }
 
     fileOverBase(e: boolean) {
