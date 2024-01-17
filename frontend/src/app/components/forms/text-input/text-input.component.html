@@ -1,0 +1,28 @@
+<div class="mb-3">
+    <input
+        type="{{ type }}"
+        class="form-control"
+        name="password"
+        [formControl]="control"
+        maxlength="8"
+        placeholder="{{ label }}"
+        [ngClass]="{
+            'is-invalid': control.touched && control.invalid
+        }"
+    />
+    @if (control.hasError("required")) {
+        <div class="invalid-feedback">Please enter a {{ label.toLowerCase() }}.</div>
+    } @else if (control.hasError("minlength")) {
+        <div class="invalid-feedback">
+            Your {{ label.toLowerCase() }} needs to be at least
+            {{ control.errors!["minlength"].requiredLength }} characters.
+        </div>
+    } @else if (control.hasError("maxlength")) {
+        <div class="invalid-feedback">
+            Your {{ label.toLowerCase() }} needs to be at most
+            {{ control.errors!["maxlength"].requiredLength }} characters.
+        </div>
+    } @else if (control.hasError("notMatching")) {
+        <div class="invalid-feedback">Passwords do not match.</div>
+    }
+</div>
