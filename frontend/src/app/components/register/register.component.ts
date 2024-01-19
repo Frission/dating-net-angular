@@ -3,24 +3,32 @@ import { Component, EventEmitter, OnInit, Output } from "@angular/core"
 import {
     AbstractControl,
     FormBuilder,
-    FormControl,
     FormGroup,
     FormsModule,
     ReactiveFormsModule,
+    ValidationErrors,
     ValidatorFn,
     Validators,
-    ɵElement as FormField,
-    ValidationErrors,
 } from "@angular/forms"
+import { Router, RouterModule } from "@angular/router"
+import { of } from "rxjs"
+import { RegisterRequest } from "../../model/request/RegisterRequest"
 import { AccountService } from "../../services/account.service"
-import { TextInputComponent } from "../forms/text-input/text-input.component"
-import { Observable, of } from "rxjs"
 import { DatePickerComponent } from "../forms/date-picker/date-picker.component"
+import { TextInputComponent } from "../forms/text-input/text-input.component"
 
 @Component({
     selector: "app-register",
     standalone: true,
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TextInputComponent, DatePickerComponent],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        JsonPipe,
+        TextInputComponent,
+        DatePickerComponent,
+        RouterModule,
+    ],
     templateUrl: "./register.component.html",
     styleUrl: "./register.component.scss",
 })
@@ -43,10 +51,12 @@ export class RegisterComponent implements OnInit {
         confirmPassword: ["", [Validators.required, this.matchValues("password")]],
     })
     maxDate: Date = new Date()
+    validationErrors: Array<string> | undefined
 
     constructor(
         private accountService: AccountService,
         private readonly formBuilder: FormBuilder,
+        private router: Router,
     ) {
         this.maxDate.setFullYear(this.maxDate.getFullYear() - 18)
         this.registerForm.controls["password"].valueChanges.subscribe({
@@ -57,8 +67,8 @@ export class RegisterComponent implements OnInit {
     ngOnInit(): void {}
 
     matchValues(matchTo: "password"): ValidatorFn {
-        return (control: AbstractControl): Observable<ValidationErrors | null> => {
-            return control.value === control.parent?.get(matchTo)?.value ? of(null) : of({ notMatching: true })
+        return (control: AbstractControl): Record<string, boolean> | null => {
+            return control.value === control.parent?.get(matchTo)?.value ? null : { notMatching: true }
         }
     }
 
@@ -68,10 +78,24 @@ export class RegisterComponent implements OnInit {
     }
 
     register() {
-        console.log(this.registerForm?.value)
-        // this.accountService.register(this.model).subscribe({
-        //     next: this.cancel.bind(this)
-        // })
+        const date = this.getDateOnly(this.registerForm.controls["dateOfBirth"].value)
+        const values: RegisterRequest = { ...this.registerForm.value as RegisterRequest, dateOfBirth: date }
+        console.log(values)
+        this.accountService.register(values).subscribe({
+            next: () => {
+                this.router.navigateByUrl("/members")
+            },
+            error: (err) => {
+                this.validationErrors = err
+                console.error(err)
+            },
+        })
+    }
+
+    private getDateOnly(dateString: string | null | undefined): string {
+        if (dateString == null) return ""
+        let date = new Date(dateString)
+        return new Date(date.setMinutes(date.getMinutes() - date.getTimezoneOffset())).toISOString().slice(0, 10)
     }
 
     cancel() {

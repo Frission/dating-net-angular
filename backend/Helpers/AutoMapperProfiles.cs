@@ -29,5 +29,6 @@ public class AutoMapperProfiles : Profile
             );
         CreateMap<Photo, PhotoDTO>();
         CreateMap<MemberUpdateDTO, AppUser>().ForAllMembers(options => options.Condition((src, dest, srcMember) => srcMember != null));
+        CreateMap<RegisterUserDTO, AppUser>();
     }
 }
