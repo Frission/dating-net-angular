@@ -35,7 +35,7 @@ export class RegisterComponent implements OnInit {
         gender: ["male"],
         username: ["", [Validators.required, Validators.minLength(2)]],
         knownAs: ["", [Validators.required, Validators.minLength(2)]],
-        dateOfBirth: ["", [Validators.required]],
+        dateOfBirth: ["", Validators.required],
         city: ["", [Validators.required, Validators.minLength(2)]],
         country: ["", [Validators.required, Validators.minLength(2)]],
         password: ["", [Validators.required, Validators.minLength(4), Validators.maxLength(8)]],
