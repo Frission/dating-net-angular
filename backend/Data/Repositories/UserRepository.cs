@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Backend.DTOs;
 using Backend.Entities;
+using Backend.Helpers;
 using Backend.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -49,10 +50,12 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
             .SingleOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<MemberDTO>> GetMembersAsync()
+    public async Task<PagedList<MemberDTO>> GetMembersAsync(PaginationParams userParams)
     {
-        return await _context.Users
+        var query = _context.Users
             .ProjectTo<MemberDTO>(_mapper.ConfigurationProvider)
-            .ToListAsync();
+            .AsNoTracking();
+
+        return await PagedList<MemberDTO>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
     }
 }

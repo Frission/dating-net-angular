@@ -3,6 +3,7 @@ using AutoMapper;
 using Backend.DTOs;
 using Backend.Entities;
 using Backend.Extensions;
+using Backend.Helpers;
 using Backend.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,9 +19,13 @@ public class UsersController(IUserRepository userRepository, IPhotoService photo
     private readonly IMapper _mapper = mapper;
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers()
+    public async Task<ActionResult<PagedList<MemberDTO>>> GetUsers([FromQuery] PaginationParams paginationParams)
     {
-        return Ok(await _userRepository.GetMembersAsync());
+        var users = await _userRepository.GetMembersAsync(paginationParams);
+
+        Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages));
+
+        return Ok(users);
     }
 
     [HttpGet("{username}")] // /api/users/lisa
