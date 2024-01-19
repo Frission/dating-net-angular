@@ -15,11 +15,12 @@ import {
 import { AccountService } from "../../services/account.service"
 import { TextInputComponent } from "../forms/text-input/text-input.component"
 import { Observable, of } from "rxjs"
+import { DatePickerComponent } from "../forms/date-picker/date-picker.component"
 
 @Component({
     selector: "app-register",
     standalone: true,
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TextInputComponent],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, JsonPipe, TextInputComponent, DatePickerComponent],
     templateUrl: "./register.component.html",
     styleUrl: "./register.component.scss",
 })
@@ -41,11 +42,13 @@ export class RegisterComponent implements OnInit {
         password: ["", [Validators.required, Validators.minLength(4), Validators.maxLength(8)]],
         confirmPassword: ["", [Validators.required, this.matchValues("password")]],
     })
+    maxDate: Date = new Date()
 
     constructor(
         private accountService: AccountService,
         private readonly formBuilder: FormBuilder,
     ) {
+        this.maxDate.setFullYear(this.maxDate.getFullYear() - 18)
         this.registerForm.controls["password"].valueChanges.subscribe({
             next: () => this.registerForm.controls["confirmPassword"].updateValueAndValidity(),
         })
