@@ -1,23 +1,24 @@
 import { HttpClient } from "@angular/common/http"
 import { Injectable } from "@angular/core"
-import { BehaviorSubject, EMPTY, catchError, map, tap } from "rxjs"
-import { LoginResponse } from "../model/response/LoginResponse"
-import { LoginRequest } from "../model/request/LoginRequest"
+import { BehaviorSubject, EMPTY, catchError, tap } from "rxjs"
 import { User } from "../model/User"
+import { LoginRequest } from "../model/request/LoginRequest"
 import { RegisterRequest } from "../model/request/RegisterRequest"
-import { environment } from "../../environments/environment"
+import { LoginResponse } from "../model/response/LoginResponse"
+import { BaseService } from "./base/BaseService"
 
 @Injectable({ providedIn: "root" })
-export class AccountService {
+export class AccountService extends BaseService {
     private _currentUser = new BehaviorSubject<User | null>(null)
     get currentUser$() {
         return this._currentUser.asObservable()
     }
 
-    private readonly baseUrl: string = environment.apiUrl
     private readonly localStorageKey = "user"
 
-    constructor(private readonly httpClient: HttpClient) {}
+    constructor(private readonly httpClient: HttpClient) {
+        super()
+    }
 
     login(request: LoginRequest) {
         return this.httpClient.post<LoginResponse>(this.baseUrl + "account/login", request).pipe(

@@ -1,20 +1,19 @@
-import { HttpClient, HttpParams } from "@angular/common/http"
+import { HttpClient } from "@angular/common/http"
 import { Injectable } from "@angular/core"
-import { map, of, tap } from "rxjs"
-import { environment } from "../../environments/environment"
+import { of, tap } from "rxjs"
+import { PaginationParams } from "../model/local/PaginationParams"
 import { Member } from "../model/response/Member"
-import { PaginatedResult } from "../model/response/Pagination"
+import { PaginatedService } from "./base/PaginatedService"
 
 @Injectable({
     providedIn: "root",
 })
-export class MembersService {
+export class MembersService extends PaginatedService<Member> {
     members: Array<Member> = []
-    private paginatedResult: PaginatedResult<Array<Member>> = new PaginatedResult<Array<Member>>()
 
-    private readonly baseUrl: string = environment.apiUrl
-
-    constructor(private readonly httpClient: HttpClient) {}
+    constructor(protected override readonly httpClient: HttpClient) {
+        super(httpClient)
+    }
 
     getMember(username: string) {
         const member = this.members.find((member) => member.userName == username)
@@ -22,24 +21,17 @@ export class MembersService {
         return this.httpClient.get<Member>(this.baseUrl + "users/" + username)
     }
 
-    getMembers(page?: number, itemsPerPage?: number) {
-        let params = new HttpParams()
+    getMembers(paginationParams: PaginationParams) {
+        let params = this.getPaginationHeaders(paginationParams.pageNumber, paginationParams.pageSize)
 
-        if (page && itemsPerPage) {
-            params = params.append("pageNumber", page).append("pageSize", itemsPerPage)
-        }
+        params = params.append("minAge", paginationParams.minAge)
+        params = params.append("maxAge", paginationParams.maxAge)
+        params = params.append("minAge", paginationParams.gender)
 
         // if (this.members.length > 0) return of(this.members)
-        return this.httpClient.get<Array<Member>>(this.baseUrl + "users", { observe: "response", params }).pipe(
-            map((response) => {
-                const pagination = response.headers.get("Pagination")
-
-                if (response.body) this.paginatedResult.result = response.body
-                if (pagination) this.paginatedResult.pagination = JSON.parse(pagination)
-                return this.paginatedResult
-            }),
-        )
+        return this.getPaginatedResult(this.baseUrl + "users", params)
     }
+
 
     updateMember(member: Member) {
         return this.httpClient.put(this.baseUrl + "users", member).pipe(
