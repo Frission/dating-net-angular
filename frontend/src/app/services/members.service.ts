@@ -26,7 +26,7 @@ export class MembersService extends PaginatedService<Member> {
 
         params = params.append("minAge", paginationParams.minAge)
         params = params.append("maxAge", paginationParams.maxAge)
-        params = params.append("minAge", paginationParams.gender)
+        params = params.append("gender", paginationParams.gender)
 
         // if (this.members.length > 0) return of(this.members)
         return this.getPaginatedResult(this.baseUrl + "users", params)

@@ -8,7 +8,7 @@ import { PageChangedEvent, PaginationModule } from "ngx-bootstrap/pagination"
 import { FormsModule } from "@angular/forms"
 import { AccountService } from "../../../services/account.service"
 import { PaginationParams } from "../../../model/local/PaginationParams"
-import { User } from "../../../model/User"
+import { Gender, User } from "../../../model/User"
 import { take } from "rxjs"
 
 @Component({
@@ -23,6 +23,10 @@ export class MemberListComponent implements OnInit {
     pagination: Pagination | undefined
     paginationParams: PaginationParams | undefined
     user: User | undefined
+    genderList: Array<{ value: Gender; display: string }> = [
+        { value: "male", display: "Male" },
+        { value: "female", display: "Female" },
+    ]
 
     constructor(
         private readonly memberService: MembersService,
@@ -53,6 +57,12 @@ export class MemberListComponent implements OnInit {
                 }
             },
         })
+    }
+
+    resetFilters () {
+        if(this.user != null) {
+            this.paginationParams = new PaginationParams(this.user)
+        }
     }
 
     pageChanged(event: PageChangedEvent) {

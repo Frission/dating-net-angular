@@ -61,6 +61,11 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
         var maxDateofBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-paginationParams.MinAge));
 
         query = query.Where(user => user.DateOfBirth >= minDateofBirth && user.DateOfBirth <= maxDateofBirth);
+        query = paginationParams.OrderBy switch
+        {
+            "created" => query.OrderByDescending(user => user.Created),
+            _ => query.OrderByDescending(user => user.LastActive)
+        };
 
         return await PagedList<MemberDTO>.CreateAsync(
             query.AsNoTracking().ProjectTo<MemberDTO>(_mapper.ConfigurationProvider),
