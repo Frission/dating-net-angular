@@ -1,29 +1,56 @@
 import { HttpClient } from "@angular/common/http"
 import { Injectable } from "@angular/core"
-import { of, tap } from "rxjs"
+import { Observable, of, take, tap } from "rxjs"
 import { PaginationParams } from "../model/local/PaginationParams"
 import { Member } from "../model/response/Member"
 import { PaginatedService } from "./base/PaginatedService"
 import { PaginatedResult } from "../model/response/Pagination"
+import { AccountService } from "./account.service"
+import { User } from "../model/User"
 
 @Injectable({
     providedIn: "root",
 })
 export class MembersService extends PaginatedService<Member> {
+    
     members: Array<Member> = []
     memberCache = new Map<string, PaginatedResult<Array<Member>>>()
+    user: User | undefined
 
-    constructor(protected override readonly httpClient: HttpClient) {
-        super(httpClient)
+    private _paginationParams: PaginationParams | undefined
+    get paginationParams(): PaginationParams | undefined {
+        return this._paginationParams
+    }
+    set paginationParams(value: PaginationParams) {
+        this._paginationParams = value
     }
 
-    getMember(username: string) {
-        const member = this.members.find((member) => member.userName == username)
+    constructor(
+        protected override readonly httpClient: HttpClient,
+        accountService: AccountService,
+    ) {
+        super(httpClient)
+        accountService.currentUser$.pipe(take(1)).subscribe({
+            next: (user) => {
+                if (user != null) {
+                    this.paginationParams = new PaginationParams(user)
+                    this.user = user
+                }
+            },
+        })
+    }
+
+    getMember(username: string): Observable<Member> {
+        const member = [...this.memberCache.values()]
+            .flatMap((p) => (p.result ? [...p.result] : []))
+            .find((member) => member.userName == username)
+
         if (member) return of(member)
+
         return this.httpClient.get<Member>(this.baseUrl + "users/" + username)
     }
 
-    getMembers(paginationParams: PaginationParams) {
+    getMembers(paginationParams: PaginationParams): Observable<PaginatedResult<Array<Member>>> {
         const response = this.memberCache.get(this.getCacheKey(paginationParams))
 
         if (response) return of(response)
@@ -43,10 +70,6 @@ export class MembersService extends PaginatedService<Member> {
         )
     }
 
-    private getCacheKey(paginationParams: PaginationParams): string {
-        return Object.values(paginationParams).join("-")
-    }
-
     updateMember(member: Member) {
         return this.httpClient.put(this.baseUrl + "users", member).pipe(
             tap(() => {
@@ -62,5 +85,15 @@ export class MembersService extends PaginatedService<Member> {
 
     deletePhoto(photoId: number) {
         return this.httpClient.delete(this.baseUrl + "delete-photo/" + photoId)
+    }
+
+    resetPaginationParams() {
+        if (this.user != null) {
+            this.paginationParams = new PaginationParams(this.user)
+        }
+    }
+
+    private getCacheKey(paginationParams: PaginationParams): string {
+        return Object.values(paginationParams).join("-")
     }
 }

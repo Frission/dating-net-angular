@@ -10,7 +10,7 @@ import { AccountService } from "../../../services/account.service"
 import { PaginationParams } from "../../../model/local/PaginationParams"
 import { Gender, User } from "../../../model/User"
 import { take } from "rxjs"
-import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { ButtonsModule } from "ngx-bootstrap/buttons"
 
 @Component({
     selector: "app-member-list",
@@ -22,26 +22,19 @@ import { ButtonsModule } from 'ngx-bootstrap/buttons';
 export class MemberListComponent implements OnInit {
     members: Array<Member> = []
     pagination: Pagination | undefined
-    paginationParams: PaginationParams | undefined
-    user: User | undefined
     genderList: Array<{ value: Gender; display: string }> = [
         { value: "male", display: "Male" },
         { value: "female", display: "Female" },
     ]
 
-    constructor(
-        private readonly memberService: MembersService,
-        accountService: AccountService,
-    ) {
-        accountService.currentUser$.pipe(take(1)).subscribe({
-            next: (user) => {
-                if (user != null) {
-                    this.paginationParams = new PaginationParams(user)
-                    this.user = user
-                }
-            },
-        })
+    protected get paginationParams(): PaginationParams | undefined {
+        return this.memberService.paginationParams
     }
+    protected set paginationParams(value: PaginationParams) {
+        this.memberService.paginationParams = value
+    }
+
+    constructor(private readonly memberService: MembersService) {}
 
     ngOnInit(): void {
         this.loadMembers()
@@ -60,14 +53,13 @@ export class MemberListComponent implements OnInit {
         })
     }
 
-    resetFilters () {
-        if(this.user != null) {
-            this.paginationParams = new PaginationParams(this.user)
-        }
+    resetFilters() {
+        this.memberService.resetPaginationParams()
+        this.loadMembers()
     }
 
     pageChanged(event: PageChangedEvent) {
-        if (this.paginationParams?.pageNumber == event.page) return
+        if (this.memberService.paginationParams?.pageNumber == event.page) return
         if (this.paginationParams?.pageSize == null) return
         this.paginationParams.pageNumber = event.page
         this.loadMembers()
