@@ -4,12 +4,14 @@ import { of, tap } from "rxjs"
 import { PaginationParams } from "../model/local/PaginationParams"
 import { Member } from "../model/response/Member"
 import { PaginatedService } from "./base/PaginatedService"
+import { PaginatedResult } from "../model/response/Pagination"
 
 @Injectable({
     providedIn: "root",
 })
 export class MembersService extends PaginatedService<Member> {
     members: Array<Member> = []
+    memberCache = new Map<string, PaginatedResult<Array<Member>>>()
 
     constructor(protected override readonly httpClient: HttpClient) {
         super(httpClient)
@@ -22,6 +24,10 @@ export class MembersService extends PaginatedService<Member> {
     }
 
     getMembers(paginationParams: PaginationParams) {
+        const response = this.memberCache.get(this.getCacheKey(paginationParams))
+
+        if (response) return of(response)
+
         let params = this.getPaginationHeaders(paginationParams.pageNumber, paginationParams.pageSize)
 
         params = params.append("minAge", paginationParams.minAge)
@@ -30,9 +36,16 @@ export class MembersService extends PaginatedService<Member> {
         params = params.append("orderBy", paginationParams.orderBy)
 
         // if (this.members.length > 0) return of(this.members)
-        return this.getPaginatedResult(this.baseUrl + "users", params)
+        return this.getPaginatedResult(this.baseUrl + "users", params).pipe(
+            tap((members) => {
+                if (members != null) this.memberCache.set(this.getCacheKey(paginationParams), members)
+            }),
+        )
     }
 
+    private getCacheKey(paginationParams: PaginationParams): string {
+        return Object.values(paginationParams).join("-")
+    }
 
     updateMember(member: Member) {
         return this.httpClient.put(this.baseUrl + "users", member).pipe(
