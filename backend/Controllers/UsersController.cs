@@ -21,6 +21,14 @@ public class UsersController(IUserRepository userRepository, IPhotoService photo
     [HttpGet]
     public async Task<ActionResult<PagedList<MemberDTO>>> GetUsers([FromQuery] PaginationParams paginationParams)
     {
+        var currentUser = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+        paginationParams.CurrentUsername = currentUser?.UserName;
+
+        if(string.IsNullOrEmpty(paginationParams.Gender))
+        {
+            paginationParams.Gender = currentUser?.Gender == "male" ? "female" : "male";
+        }
+
         var users = await _userRepository.GetMembersAsync(paginationParams);
 
         Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages));
