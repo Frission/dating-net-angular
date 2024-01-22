@@ -1,4 +1,4 @@
-import { ApplicationConfig } from "@angular/core"
+import { ApplicationConfig, importProvidersFrom } from "@angular/core"
 import { provideRouter } from "@angular/router"
 
 import { provideHttpClient, withInterceptors } from "@angular/common/http"
@@ -8,6 +8,7 @@ import { routes } from "./app.routes"
 import { errorInterceptor } from "./interceptors/error.interceptor"
 import { authInterceptor } from "./interceptors/auth.interceptor"
 import { loadingInterceptor } from "./interceptors/loading.interceptor"
+import { TimeagoModule } from "ngx-timeago"
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -15,5 +16,6 @@ export const appConfig: ApplicationConfig = {
         provideHttpClient(withInterceptors([errorInterceptor, authInterceptor, loadingInterceptor])),
         provideAnimations(),
         provideToastr({ positionClass: "toast-bottom-right" }),
+        importProvidersFrom(TimeagoModule.forRoot()),
     ],
 }
