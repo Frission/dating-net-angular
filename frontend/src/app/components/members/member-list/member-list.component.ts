@@ -10,11 +10,12 @@ import { AccountService } from "../../../services/account.service"
 import { PaginationParams } from "../../../model/local/PaginationParams"
 import { Gender, User } from "../../../model/User"
 import { take } from "rxjs"
+import { ButtonsModule } from 'ngx-bootstrap/buttons';
 
 @Component({
     selector: "app-member-list",
     standalone: true,
-    imports: [MemberCardComponent, AsyncPipe, PaginationModule, FormsModule],
+    imports: [MemberCardComponent, AsyncPipe, PaginationModule, FormsModule, ButtonsModule],
     templateUrl: "./member-list.component.html",
     styleUrl: "./member-list.component.scss",
 })
