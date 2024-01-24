@@ -7,7 +7,7 @@ import { MemberCardComponent } from "../member-card/member-card.component"
 import { PageChangedEvent, PaginationModule } from "ngx-bootstrap/pagination"
 import { FormsModule } from "@angular/forms"
 import { AccountService } from "../../../services/account.service"
-import { PaginationParams } from "../../../model/local/PaginationParams"
+import { UserParams } from "../../../model/local/UserParams"
 import { Gender, User } from "../../../model/User"
 import { take } from "rxjs"
 import { ButtonsModule } from "ngx-bootstrap/buttons"
@@ -27,10 +27,10 @@ export class MemberListComponent implements OnInit {
         { value: "female", display: "Female" },
     ]
 
-    protected get paginationParams(): PaginationParams | undefined {
+    protected get paginationParams(): UserParams | undefined {
         return this.memberService.paginationParams
     }
-    protected set paginationParams(value: PaginationParams) {
+    protected set paginationParams(value: UserParams) {
         this.memberService.paginationParams = value
     }
 
@@ -54,7 +54,7 @@ export class MemberListComponent implements OnInit {
     }
 
     resetFilters() {
-        this.memberService.resetPaginationParams()
+        this.memberService.resetUserParams()
         this.loadMembers()
     }
 

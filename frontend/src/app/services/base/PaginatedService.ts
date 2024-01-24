@@ -3,13 +3,13 @@ import { map } from "rxjs"
 import { PaginatedResult } from "../../model/response/Pagination"
 import { BaseService } from "./BaseService"
 
-export abstract class PaginatedService<T, R extends Array<T> = Array<T>> extends BaseService {
+export abstract class PaginatedService extends BaseService {
 
     constructor(protected readonly httpClient: HttpClient) {
         super()
     }
 
-    protected getPaginatedResult(url: string, params: HttpParams) {
+    protected getPaginatedResult<T, R extends Array<T> = Array<T>>(url: string, params: HttpParams) {
         const paginatedResult: PaginatedResult<R> = new PaginatedResult<R>()
 
         return this.httpClient.get<R>(url, { observe: "response", params }).pipe(

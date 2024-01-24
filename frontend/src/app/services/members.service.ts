@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http"
 import { Injectable } from "@angular/core"
 import { Observable, of, take, tap } from "rxjs"
-import { PaginationParams } from "../model/local/PaginationParams"
+import { UserParams } from "../model/local/UserParams"
 import { Member } from "../model/response/Member"
 import { PaginatedService } from "./base/PaginatedService"
 import { PaginatedResult } from "../model/response/Pagination"
@@ -12,17 +12,16 @@ import { LikesPredicate } from "../model/local/LikesPredicate"
 @Injectable({
     providedIn: "root",
 })
-export class MembersService extends PaginatedService<Member> {
-    
+export class MembersService extends PaginatedService {
     members: Array<Member> = []
     memberCache = new Map<string, PaginatedResult<Array<Member>>>()
     user: User | undefined
 
-    private _paginationParams: PaginationParams | undefined
-    get paginationParams(): PaginationParams | undefined {
+    private _paginationParams: UserParams | undefined
+    get paginationParams(): UserParams | undefined {
         return this._paginationParams
     }
-    set paginationParams(value: PaginationParams) {
+    set paginationParams(value: UserParams) {
         this._paginationParams = value
     }
 
@@ -34,7 +33,7 @@ export class MembersService extends PaginatedService<Member> {
         accountService.currentUser$.pipe(take(1)).subscribe({
             next: (user) => {
                 if (user != null) {
-                    this.paginationParams = new PaginationParams(user)
+                    this.paginationParams = new UserParams(user)
                     this.user = user
                 }
             },
@@ -51,7 +50,7 @@ export class MembersService extends PaginatedService<Member> {
         return this.httpClient.get<Member>(this.baseUrl + "users/" + username)
     }
 
-    getMembers(paginationParams: PaginationParams): Observable<PaginatedResult<Array<Member>>> {
+    getMembers(paginationParams: UserParams): Observable<PaginatedResult<Array<Member>>> {
         const response = this.memberCache.get(this.getCacheKey(paginationParams))
 
         if (response) return of(response)
@@ -64,7 +63,7 @@ export class MembersService extends PaginatedService<Member> {
         params = params.append("orderBy", paginationParams.orderBy)
 
         // if (this.members.length > 0) return of(this.members)
-        return this.getPaginatedResult(this.baseUrl + "users", params).pipe(
+        return this.getPaginatedResult<Member>(this.baseUrl + "users", params).pipe(
             tap((members) => {
                 if (members != null) this.memberCache.set(this.getCacheKey(paginationParams), members)
             }),
@@ -92,17 +91,21 @@ export class MembersService extends PaginatedService<Member> {
         return this.httpClient.post(this.baseUrl + "likes/" + username, {})
     }
 
-    getLikes(predicate: LikesPredicate) {
-        return this.httpClient.get<Array<Member>>(this.baseUrl + "likes?predicate=" + predicate, {})
+    getLikes(predicate: LikesPredicate, pageNumber: number, pageSize: number) {
+        let params = this.getPaginationHeaders(pageNumber, pageSize)
+
+        params = params.append("predicate", predicate)
+
+        return this.getPaginatedResult<Member>(this.baseUrl + "likes", params)
     }
 
-    resetPaginationParams() {
+    resetUserParams() {
         if (this.user != null) {
-            this.paginationParams = new PaginationParams(this.user)
+            this.paginationParams = new UserParams(this.user)
         }
     }
 
-    private getCacheKey(paginationParams: PaginationParams): string {
+    private getCacheKey(paginationParams: UserParams): string {
         return Object.values(paginationParams).join("-")
     }
 }
