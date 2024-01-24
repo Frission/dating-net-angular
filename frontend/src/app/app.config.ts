@@ -16,6 +16,6 @@ export const appConfig: ApplicationConfig = {
         provideHttpClient(withInterceptors([errorInterceptor, authInterceptor, loadingInterceptor])),
         provideAnimations(),
         provideToastr({ positionClass: "toast-bottom-right" }),
-        importProvidersFrom(TimeagoModule.forRoot()),
+        importProvidersFrom(TimeagoModule.forRoot())
     ],
 }

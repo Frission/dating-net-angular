@@ -21,6 +21,7 @@ public static class ApplicationServiceExtensions
 
         // repositories
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ILikesRepository, LikesRepository>();
 
         // rest
         services.AddScoped<ITokenService, TokenService>();

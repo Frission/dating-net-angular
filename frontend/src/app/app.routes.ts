@@ -1,14 +1,9 @@
 import { Routes } from "@angular/router"
 import { HomeComponent } from "./components/home/home.component"
-import { ListsComponent } from "./components/lists/lists.component"
-import { MemberDetailComponent } from "./components/members/member-detail/member-detail.component"
-import { MemberListComponent } from "./components/members/member-list/member-list.component"
-import { MessagesComponent } from "./components/messages/messages.component"
-import { authGuard } from "./guards/auth.guard"
-import { TestErrorComponent } from "./errors/test-error/test-error.component"
 import { NotFoundComponent } from "./errors/not-found/not-found.component"
 import { ServerErrorComponent } from "./errors/server-error/server-error.component"
-import { MemberEditComponent } from "./components/members/member-edit/member-edit.component"
+import { TestErrorComponent } from "./errors/test-error/test-error.component"
+import { authGuard } from "./guards/auth.guard"
 import { preventUnsavedChangesGuard } from "./guards/prevent-unsaved-changes.guard"
 
 export const routes: Routes = [
@@ -18,11 +13,33 @@ export const routes: Routes = [
         runGuardsAndResolvers: "always",
         canActivate: [authGuard],
         children: [
-            { path: "members", component: MemberListComponent },
-            { path: "members/:username", component: MemberDetailComponent },
-            { path: "member/edit", component: MemberEditComponent, canDeactivate: [preventUnsavedChangesGuard] },
-            { path: "lists", component: ListsComponent },
-            { path: "messages", component: MessagesComponent },
+            {
+                path: "members",
+                loadComponent: () =>
+                    import("./components/members/member-list/member-list.component").then((c) => c.MemberListComponent),
+            },
+            {
+                path: "members/:username",
+                loadComponent: () =>
+                    import("./components/members/member-detail/member-detail.component").then(
+                        (c) => c.MemberDetailComponent,
+                    ),
+            },
+            {
+                path: "member/edit",
+                loadComponent: () =>
+                    import("./components/members/member-edit/member-edit.component").then((c) => c.MemberEditComponent),
+                canDeactivate: [preventUnsavedChangesGuard],
+            },
+            {
+                path: "lists",
+                loadComponent: () => import("./components/lists/lists.component").then((c) => c.ListsComponent),
+            },
+            {
+                path: "messages",
+                loadComponent: () =>
+                    import("./components/messages/messages.component").then((c) => c.MessagesComponent),
+            },
         ],
     },
     { path: "errors", component: TestErrorComponent },
