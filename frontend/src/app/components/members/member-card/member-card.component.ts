@@ -1,6 +1,8 @@
 import { Component, Input } from "@angular/core"
 import { RouterModule } from "@angular/router"
 import { Member } from "../../../model/response/Member"
+import { MembersService } from "../../../services/members.service"
+import { ToastrService } from "ngx-toastr"
 
 @Component({
     selector: "app-member-card",
@@ -11,4 +13,12 @@ import { Member } from "../../../model/response/Member"
 })
 export class MemberCardComponent {
     @Input({ required: true }) member: Member | undefined
+
+    constructor(private readonly memberService: MembersService, private readonly toastrService: ToastrService) {}
+
+    addLike(member: Member) {
+        this.memberService.addLike(member.userName).subscribe({
+            next: () => this.toastrService.success("You have liked " + member.knownAs)
+        })
+    }
 }

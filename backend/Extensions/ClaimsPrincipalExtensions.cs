@@ -10,9 +10,12 @@ public static class ClaimsPrincipalExtensions
             throw new NullReferenceException("User name was null inside claims.");
     }
 
-     public static string GetUserId(this ClaimsPrincipal user)
+    public static int GetUserId(this ClaimsPrincipal user)
     {
-        return user.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
-            throw new NullReferenceException("User id was null inside claims.");
+        var id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (id == null) throw new NullReferenceException("User id was null inside claims.");
+
+        return int.Parse(id);
     }
 }

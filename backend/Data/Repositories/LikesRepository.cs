@@ -1,6 +1,7 @@
 using Backend.DTOs;
 using Backend.Entities;
 using Backend.Extensions;
+using Backend.Helpers;
 using Backend.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,23 +16,23 @@ public class LikesRepository(DataContext context) : ILikesRepository
         return await _context.Likes.FindAsync(sourceUserId, targerUserId);
     }
 
-    public async Task<IEnumerable<LikeDTO>> GetUserLikes(string predicate, int userId)
+    public async Task<PagedList<LikeDTO>> GetUserLikes(LikesParams paginationParams)
     {
         var users = _context.Users.OrderBy(user => user.UserName).AsQueryable();
         var likes = _context.Likes.AsQueryable();
 
-        if (predicate == LikeDTO.Predicates.Liked)
+        if (paginationParams.Predicate == LikeDTO.Predicates.Liked)
         {
-            likes = likes.Where(like => like.SourceUserId == userId);
+            likes = likes.Where(like => like.SourceUserId == paginationParams.UserId );
             users = likes.Select(like => like.TargetUser);
         }
-        else if (predicate == LikeDTO.Predicates.LikedBy)
+        else if (paginationParams.Predicate  == LikeDTO.Predicates.LikedBy)
         {
-            likes = likes.Where(like => like.TargetUserId == userId);
+            likes = likes.Where(like => like.TargetUserId == paginationParams.UserId);
             users = likes.Select(like => like.SourceUser);
         }
 
-        return await users.Select(user => new LikeDTO
+        var likedUsers = users.Select(user => new LikeDTO
         {
             UserName = user.UserName,
             KnownAs = user.KnownAs,
@@ -39,7 +40,9 @@ public class LikesRepository(DataContext context) : ILikesRepository
             PhotoUrl = (user.Photos.FirstOrDefault(photo => photo.IsMain) ?? new Photo{ Url = null! }).Url,
             City = user.City,
             Id = user.Id
-        }).ToListAsync();
+        }).AsQueryable();
+
+        return await PagedList<LikeDTO>.CreateAsync(likedUsers, paginationParams.PageNumber, paginationParams.PageSize);
     }
 
     public async Task<AppUser?> GetUserWithLikes(int userId)

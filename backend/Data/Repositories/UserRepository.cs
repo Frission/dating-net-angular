@@ -50,7 +50,7 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
             .SingleOrDefaultAsync();
     }
 
-    public async Task<PagedList<MemberDTO>> GetMembersAsync(PaginationParams paginationParams)
+    public async Task<PagedList<MemberDTO>> GetMembersAsync(UserParams paginationParams)
     {
         var query = _context.Users.AsQueryable();
 

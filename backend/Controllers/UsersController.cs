@@ -19,7 +19,7 @@ public class UsersController(IUserRepository userRepository, IPhotoService photo
     private readonly IMapper _mapper = mapper;
 
     [HttpGet]
-    public async Task<ActionResult<PagedList<MemberDTO>>> GetUsers([FromQuery] PaginationParams paginationParams)
+    public async Task<ActionResult<PagedList<MemberDTO>>> GetUsers([FromQuery] UserParams paginationParams)
     {
         var currentUser = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
         paginationParams.CurrentUsername = currentUser?.UserName;

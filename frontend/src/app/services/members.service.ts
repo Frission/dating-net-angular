@@ -7,6 +7,7 @@ import { PaginatedService } from "./base/PaginatedService"
 import { PaginatedResult } from "../model/response/Pagination"
 import { AccountService } from "./account.service"
 import { User } from "../model/User"
+import { LikesPredicate } from "../model/local/LikesPredicate"
 
 @Injectable({
     providedIn: "root",
@@ -85,6 +86,14 @@ export class MembersService extends PaginatedService<Member> {
 
     deletePhoto(photoId: number) {
         return this.httpClient.delete(this.baseUrl + "delete-photo/" + photoId)
+    }
+
+    addLike(username: string) {
+        return this.httpClient.post(this.baseUrl + "likes/" + username, {})
+    }
+
+    getLikes(predicate: LikesPredicate) {
+        return this.httpClient.get<Array<Member>>(this.baseUrl + "likes?predicate=" + predicate, {})
     }
 
     resetPaginationParams() {
