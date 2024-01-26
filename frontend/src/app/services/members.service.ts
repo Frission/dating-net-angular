@@ -63,7 +63,7 @@ export class MembersService extends PaginatedService {
         params = params.append("orderBy", paginationParams.orderBy)
 
         // if (this.members.length > 0) return of(this.members)
-        return this.getPaginatedResult<Member>(this.baseUrl + "users", params).pipe(
+        return this.getPaginatedResult<Array<Member>>(this.baseUrl + "users", params).pipe(
             tap((members) => {
                 if (members != null) this.memberCache.set(this.getCacheKey(paginationParams), members)
             }),
@@ -96,7 +96,7 @@ export class MembersService extends PaginatedService {
 
         params = params.append("predicate", predicate)
 
-        return this.getPaginatedResult<Member>(this.baseUrl + "likes", params)
+        return this.getPaginatedResult<Array<Member>>(this.baseUrl + "likes", params)
     }
 
     resetUserParams() {
