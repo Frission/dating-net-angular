@@ -10,8 +10,10 @@ public class Photo
     public string Url { get; set; } = string.Empty;
     public bool IsMain { get; set; }
     public string PublicId { get; set; } = string.Empty;
+
     [Required]
     public int AppUserId { get; set; }
+
     [Required]
     public AppUser AppUser { get; set; } = null!;
 }

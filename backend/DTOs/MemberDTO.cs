@@ -15,5 +15,4 @@ public class MemberDTO
     public string? City { get; set; }
     public string? Country { get; set; }
     public List<PhotoDTO> Photos { get; set; } = null!;
-
 }

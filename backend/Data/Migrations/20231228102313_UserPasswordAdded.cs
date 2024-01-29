@@ -15,26 +15,24 @@ namespace Backend.Data.Migrations
                 table: "Users",
                 type: "BLOB",
                 nullable: false,
-                defaultValue: new byte[0]);
+                defaultValue: new byte[0]
+            );
 
             migrationBuilder.AddColumn<byte[]>(
                 name: "PasswordSalt",
                 table: "Users",
                 type: "BLOB",
                 nullable: false,
-                defaultValue: new byte[0]);
+                defaultValue: new byte[0]
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "PasswordHash",
-                table: "Users");
+            migrationBuilder.DropColumn(name: "PasswordHash", table: "Users");
 
-            migrationBuilder.DropColumn(
-                name: "PasswordSalt",
-                table: "Users");
+            migrationBuilder.DropColumn(name: "PasswordSalt", table: "Users");
         }
     }
 }

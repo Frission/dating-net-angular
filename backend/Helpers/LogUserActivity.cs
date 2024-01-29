@@ -6,17 +6,23 @@ namespace Backend.Helpers;
 
 public class LogUserActivity : IAsyncActionFilter
 {
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(
+        ActionExecutingContext context,
+        ActionExecutionDelegate next
+    )
     {
         var resultContext = await next();
 
-        if (resultContext.HttpContext.User.Identity?.IsAuthenticated != true) return;
+        if (resultContext.HttpContext.User.Identity?.IsAuthenticated != true)
+            return;
 
         var userId = resultContext.HttpContext.User.GetUserId();
-        var repository = resultContext.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
+        var repository =
+            resultContext.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
         var user = await repository.GetUserByIdAsync(userId);
 
-        if (user == null) return;
+        if (user == null)
+            return;
 
         user.LastActive = DateTime.UtcNow;
         await repository.SaveAllAsync();

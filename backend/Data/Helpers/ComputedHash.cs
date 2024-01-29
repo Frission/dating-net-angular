@@ -8,7 +8,8 @@ readonly struct ComputedHash(byte[] hash, byte[] salt)
     public readonly byte[] Hash = hash;
     public readonly byte[] Salt = salt;
 
-    public ComputedHash(string password) : this(hash: [], salt: [])
+    public ComputedHash(string password)
+        : this(hash: [], salt: [])
     {
         using var hmac = new HMACSHA512();
 
@@ -18,7 +19,8 @@ readonly struct ComputedHash(byte[] hash, byte[] salt)
         Salt = hmac.Key;
     }
 
-    public ComputedHash(string password, byte[] passwordSalt) : this(hash: [], salt: passwordSalt)
+    public ComputedHash(string password, byte[] passwordSalt)
+        : this(hash: [], salt: passwordSalt)
     {
         using var hmac = new HMACSHA512(passwordSalt);
 

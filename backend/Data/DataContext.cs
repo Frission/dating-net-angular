@@ -13,28 +13,31 @@ public class DataContext(DbContextOptions options) : DbContext(options)
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<UserLike>()
-            .HasKey(key => new { key.SourceUserId, key.TargetUserId });
+        builder.Entity<UserLike>().HasKey(key => new { key.SourceUserId, key.TargetUserId });
 
         // our source user can like many other users
-        builder.Entity<UserLike>()
+        builder
+            .Entity<UserLike>()
             .HasOne(s => s.SourceUser)
             .WithMany(l => l.LikedUsers)
             .HasForeignKey(s => s.SourceUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Entity<UserLike>()
+        builder
+            .Entity<UserLike>()
             .HasOne(s => s.TargetUser)
             .WithMany(l => l.LikedByUsers)
             .HasForeignKey(s => s.TargetUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Entity<Message>()
+        builder
+            .Entity<Message>()
             .HasOne(u => u.Recipient)
             .WithMany(m => m.MessageReceived)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Entity<Message>()
+        builder
+            .Entity<Message>()
             .HasOne(u => u.Sender)
             .WithMany(m => m.MessagesSent)
             .OnDelete(DeleteBehavior.Restrict);

@@ -5,10 +5,8 @@ namespace Backend.Extensions;
 
 public static class HttpExtensions
 {
-    private static readonly JsonSerializerOptions jsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
+    private static readonly JsonSerializerOptions jsonOptions =
+        new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     public static void AddPaginationHeader(this HttpResponse response, PaginationHeader header)
     {

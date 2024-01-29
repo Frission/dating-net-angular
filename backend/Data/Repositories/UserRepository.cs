@@ -20,16 +20,14 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
 
     public async Task<AppUser?> GetUserByUsernameAsync(string username)
     {
-        return await _context.Users
-            .Include(user => user.Photos)
+        return await _context
+            .Users.Include(user => user.Photos)
             .SingleOrDefaultAsync(x => x.UserName == username);
     }
 
     public async Task<IEnumerable<AppUser>> GetUsersAsync()
     {
-        return await _context.Users
-            .Include(user => user.Photos)
-            .ToListAsync();
+        return await _context.Users.Include(user => user.Photos).ToListAsync();
     }
 
     public async Task<bool> SaveAllAsync()
@@ -44,8 +42,8 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
 
     public async Task<MemberDTO?> GetMemberAsync(string username)
     {
-        return await _context.Users
-            .Where(x => x.UserName == username)
+        return await _context
+            .Users.Where(x => x.UserName == username)
             .ProjectTo<MemberDTO>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
     }
@@ -57,10 +55,16 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
         query = query.Where(user => user.UserName != paginationParams.CurrentUsername);
         query = query.Where(user => user.Gender == paginationParams.Gender);
 
-        var minDateofBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-paginationParams.MaxAge - 1));
-        var maxDateofBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-paginationParams.MinAge));
+        var minDateofBirth = DateOnly.FromDateTime(
+            DateTime.Today.AddYears(-paginationParams.MaxAge - 1)
+        );
+        var maxDateofBirth = DateOnly.FromDateTime(
+            DateTime.Today.AddYears(-paginationParams.MinAge)
+        );
 
-        query = query.Where(user => user.DateOfBirth >= minDateofBirth && user.DateOfBirth <= maxDateofBirth);
+        query = query.Where(user =>
+            user.DateOfBirth >= minDateofBirth && user.DateOfBirth <= maxDateofBirth
+        );
         query = paginationParams.OrderBy switch
         {
             "created" => query.OrderByDescending(user => user.Created),

@@ -6,12 +6,20 @@ namespace Backend.Extensions;
 
 public static class IdentityServiceExtensions
 {
-    public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddIdentityServices(
+        this IServiceCollection services,
+        IConfiguration config
+    )
     {
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                var tokenKey = config["TokenKey"] ?? throw new InvalidDataException("Token key was null when trying to create a JWT token");
+                var tokenKey =
+                    config["TokenKey"]
+                    ?? throw new InvalidDataException(
+                        "Token key was null when trying to create a JWT token"
+                    );
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {

@@ -15,7 +15,8 @@ namespace Backend.Data.Migrations
                 name: "Messages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table
+                        .Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     SenderId = table.Column<int>(type: "INTEGER", nullable: false),
                     SenderUsername = table.Column<string>(type: "TEXT", nullable: false),
@@ -35,31 +36,35 @@ namespace Backend.Data.Migrations
                         column: x => x.RecipientId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Restrict
+                    );
                     table.ForeignKey(
                         name: "FK_Messages_Users_SenderId",
                         column: x => x.SenderId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
+                        onDelete: ReferentialAction.Restrict
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_RecipientId",
                 table: "Messages",
-                column: "RecipientId");
+                column: "RecipientId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_SenderId",
                 table: "Messages",
-                column: "SenderId");
+                column: "SenderId"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Messages");
+            migrationBuilder.DropTable(name: "Messages");
         }
     }
 }

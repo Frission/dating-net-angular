@@ -25,26 +25,29 @@ namespace Backend.Data.Migrations
                         column: x => x.SourceUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Cascade
+                    );
                     table.ForeignKey(
                         name: "FK_Likes_Users_TargetUserId",
                         column: x => x.TargetUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Likes_TargetUserId",
                 table: "Likes",
-                column: "TargetUserId");
+                column: "TargetUserId"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Likes");
+            migrationBuilder.DropTable(name: "Likes");
         }
     }
 }

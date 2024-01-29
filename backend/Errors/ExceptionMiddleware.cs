@@ -3,7 +3,11 @@ using Microsoft.VisualBasic;
 
 namespace Backend.Errors;
 
-public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
+public class ExceptionMiddleware(
+    RequestDelegate next,
+    ILogger<ExceptionMiddleware> logger,
+    IHostEnvironment env
+)
 {
     private readonly RequestDelegate _next = next;
     private readonly ILogger<ExceptionMiddleware> _logger = logger;
@@ -21,9 +25,17 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
             context.Response.ContentType = "aplication/json";
             context.Response.StatusCode = 500;
 
-            var response = _env.IsDevelopment() ?
-                new ApiException(context.Response.StatusCode, ex.Message, ex.StackTrace?.ToString()) :
-                new ApiException(context.Response.StatusCode, ex.Message, "Internal Server Error");
+            var response = _env.IsDevelopment()
+                ? new ApiException(
+                    context.Response.StatusCode,
+                    ex.Message,
+                    ex.StackTrace?.ToString()
+                )
+                : new ApiException(
+                    context.Response.StatusCode,
+                    ex.Message,
+                    "Internal Server Error"
+                );
 
             await context.Response.WriteAsJsonAsync(response);
         }

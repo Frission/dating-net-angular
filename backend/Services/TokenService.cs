@@ -9,12 +9,15 @@ namespace Backend.Services;
 
 public class TokenService : ITokenService
 {
-
     private readonly SymmetricSecurityKey _key;
 
     public TokenService(IConfiguration config)
     {
-        var tokenKey = config["TokenKey"] ?? throw new InvalidDataException("Token key was null when trying to create a JWT token");
+        var tokenKey =
+            config["TokenKey"]
+            ?? throw new InvalidDataException(
+                "Token key was null when trying to create a JWT token"
+            );
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
     }
 

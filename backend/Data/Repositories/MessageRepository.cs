@@ -30,40 +30,54 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
 
     public async Task<PagedList<MessageDTO>> GetMessagesForUser(MessageParams messageParams)
     {
-        var query = _context.Messages
-            .OrderByDescending(x => x.MessageSent)
-            .AsQueryable();
+        var query = _context.Messages.OrderByDescending(x => x.MessageSent).AsQueryable();
 
         query = messageParams.Container switch
         {
             "Inbox" => query.Where(u => u.RecipientUsername == messageParams.Username),
             "Outbox" => query.Where(u => u.SenderUsername == messageParams.Username),
-            _ => query.Where(u => u.RecipientUsername == messageParams.Username && u.DateRead == null)
+            _
+                => query.Where(u =>
+                    u.RecipientUsername == messageParams.Username && u.DateRead == null
+                )
         };
 
         var messages = query.ProjectTo<MessageDTO>(_mapper.ConfigurationProvider);
 
-        return await PagedList<MessageDTO>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
+        return await PagedList<MessageDTO>.CreateAsync(
+            messages,
+            messageParams.PageNumber,
+            messageParams.PageSize
+        );
     }
 
-    public async Task<IEnumerable<MessageDTO>> GetMessageThread(string currentUserName, string recipientUsername)
+    public async Task<IEnumerable<MessageDTO>> GetMessageThread(
+        string currentUserName,
+        string recipientUsername
+    )
     {
-        var messages = await _context.Messages
-            .Include(message => message.Sender)
+        var messages = await _context
+            .Messages.Include(message => message.Sender)
             .ThenInclude(sender => sender.Photos)
             .Include(message => message.Recipient)
             .ThenInclude(recipient => recipient.Photos)
             .Where(message =>
-                (message.RecipientUsername == currentUserName &&
-                message.SenderUsername == recipientUsername) ||
-                (message.RecipientUsername == recipientUsername &&
-                message.SenderUsername == currentUserName)
+                (
+                    message.RecipientUsername == currentUserName
+                    && message.SenderUsername == recipientUsername
+                )
+                || (
+                    message.RecipientUsername == recipientUsername
+                    && message.SenderUsername == currentUserName
+                )
             )
             .OrderBy(message => message.MessageSent)
             .ToListAsync();
 
         var unreadMessages = messages
-            .Where(message => message.DateRead == null && message.RecipientUsername == currentUserName)
+            .Where(message =>
+                message.DateRead == null && message.RecipientUsername == currentUserName
+            )
             .ToList();
 
         if (unreadMessages.Count > 0)

@@ -8,7 +8,6 @@ public class LikeDTO
     public string? KnownAs { get; set; }
     public string? City { get; set; }
     public string? PhotoUrl { get; set; }
-    
 
     public static class Predicates
     {

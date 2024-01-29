@@ -11,7 +11,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers;
 
-public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseApiController
+public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
+    : BaseApiController
 {
     private readonly DataContext _context = context;
     private readonly ITokenService _tokenService = tokenService;
@@ -48,8 +49,8 @@ public class AccountController(DataContext context, ITokenService tokenService, 
     [HttpPost("login")]
     public async Task<ActionResult<UserDTO>> LoginUser(LoginDTO credentials)
     {
-        var user = await _context.Users
-            .Include(user => user.Photos)
+        var user = await _context
+            .Users.Include(user => user.Photos)
             .SingleOrDefaultAsync(user => user.UserName == credentials.Username);
 
         if (user == null)
@@ -59,7 +60,9 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
         if (!ComputedHash.Compare(computedHash.Hash, user.PasswordHash))
         {
-            return Unauthorized(new { Errors = new { Credentials = "Username or password is incorrect." } });
+            return Unauthorized(
+                new { Errors = new { Credentials = "Username or password is incorrect." } }
+            );
         }
 
         return new UserDTO
