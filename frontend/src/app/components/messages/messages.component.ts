@@ -30,7 +30,7 @@ export class MessagesComponent implements OnInit {
         this.loadMessages()
     }
 
-    loadMessages() {
+    protected loadMessages() {
         this.loading = true
         this.messageService.getMessages(this.pageNumber, this.pageSize, this.container).subscribe({
             next: (response) => {
@@ -41,7 +41,16 @@ export class MessagesComponent implements OnInit {
         })
     }
 
-    pageChanged(event: PageChangedEvent) {
+    protected deleteMessage(messageId: number) {
+        this.messageService.deleteMessage(messageId).subscribe({
+            next: () => {
+                const index = this.messages?.findIndex((messages) => messages.id == messageId)
+                if (index != null) this.messages?.splice(index, 1)
+            },
+        })
+    }
+
+    protected pageChanged(event: PageChangedEvent) {
         if (this.pageNumber === event.page) return
         this.pageNumber = event.page
         this.loadMessages()

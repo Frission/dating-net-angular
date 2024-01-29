@@ -33,6 +33,10 @@ export class MessagesService extends PaginatedService {
     sendMessage(message: SendMessageRequest) {
         return this.httpClient.post<Message>(this.baseUrl + "messages", message)
     }
+
+    deleteMessage(messageId: number) {
+        return this.httpClient.delete(this.baseUrl + "messages/" + messageId)
+    }
 }
 
 export type MessageContainer = "Unread" | "Inbox" | "Outbox"

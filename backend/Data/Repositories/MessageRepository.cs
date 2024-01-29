@@ -25,7 +25,10 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
 
     public async Task<Message?> GetMessage(int id)
     {
-        return await _context.Messages.FindAsync(id);
+        return await _context
+            .Messages.Include(message => message.Sender)
+            .Include(message => message.Recipient)
+            .SingleOrDefaultAsync(message => message.Id == id);
     }
 
     public async Task<PagedList<MessageDTO>> GetMessagesForUser(MessageParams messageParams)
