@@ -59,7 +59,7 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
                 (message.RecipientUsername == recipientUsername &&
                 message.SenderUsername == currentUserName)
             )
-            .OrderByDescending(message => message.MessageSent)
+            .OrderBy(message => message.MessageSent)
             .ToListAsync();
 
         var unreadMessages = messages

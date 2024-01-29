@@ -17,7 +17,7 @@
                             <div class="chat-body">
                                 <div class="header">
                                     <small class="text-muted">
-                                        <i class="fa fa-clock-o"></i>  Sent {{ message.messageSent | timeago }}
+                                        <i class="fa fa-clock-o"></i> Sent {{ message.messageSent | timeago }}
                                         @if (!message.dateRead && message.senderUsername !== username) {
                                             <span class="text-danger"> (unread)</span>
                                         }
@@ -36,10 +36,25 @@
     </div>
 
     <div class="card-footer">
-        <form>
+        <form #messageForm="ngForm" autocomplete="off" (submit)="sendMessage()">
             <div class="input-group">
-                <input type="text" class="form-control input-sm" placeholder="Send a private message" />
-                <div class="input-group-append"><button class="btn btn-primary" type="submit">Send</button></div>
+                <input
+                    type="text"
+                    class="form-control input-sm me-3"
+                    placeholder="Send a private message"
+                    name="messageContent"
+                    required
+                    [(ngModel)]="messageContent"
+                />
+                <div class="input-group-append">
+                    <button
+                        [disabled]="!messageForm.valid || !messageForm.touched"
+                        class="btn btn-primary"
+                        type="submit"
+                    >
+                        Send
+                    </button>
+                </div>
             </div>
         </form>
     </div>

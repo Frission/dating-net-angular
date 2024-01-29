@@ -4,6 +4,7 @@ import { Observable } from "rxjs"
 import { Message } from "../model/response/Message"
 import { PaginatedResult } from "../model/response/Pagination"
 import { PaginatedService } from "./base/PaginatedService"
+import { SendMessageRequest } from "../model/request/SendMessageRequest"
 
 @Injectable({
     providedIn: "root",
@@ -27,6 +28,10 @@ export class MessagesService extends PaginatedService {
 
     getMessageThread(username: string): Observable<Array<Message>> {
         return this.httpClient.get<Array<Message>>(this.baseUrl + "messages/thread/" + username)
+    }
+
+    sendMessage(message: SendMessageRequest) {
+        return this.httpClient.post<Message>(this.baseUrl + "messages", message)
     }
 }
 

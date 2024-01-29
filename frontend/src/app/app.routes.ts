@@ -5,6 +5,7 @@ import { ServerErrorComponent } from "./errors/server-error/server-error.compone
 import { TestErrorComponent } from "./errors/test-error/test-error.component"
 import { authGuard } from "./guards/auth.guard"
 import { preventUnsavedChangesGuard } from "./guards/prevent-unsaved-changes.guard"
+import { memberDetailedResolver } from "./resolvers/member-detailed.resolver"
 
 export const routes: Routes = [
     { path: "", component: HomeComponent },
@@ -20,6 +21,7 @@ export const routes: Routes = [
             },
             {
                 path: "members/:username",
+                resolve: { member: memberDetailedResolver },
                 loadComponent: () =>
                     import("./components/members/member-detail/member-detail.component").then(
                         (c) => c.MemberDetailComponent,
