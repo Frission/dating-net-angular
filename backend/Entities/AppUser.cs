@@ -1,23 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Backend.Extensions;
+using Microsoft.AspNetCore.Identity;
 
 namespace Backend.Entities;
 
 [Table("Users")]
-public class AppUser
+public class AppUser : IdentityUser<int>
 {
-    public int Id { get; set; }
-
-    [Required]
-    [StringLength(maximumLength: 100, MinimumLength = 3)]
-    public string UserName { get; set; } = string.Empty;
-
-    [Required]
-    public byte[] PasswordHash { get; set; } = [];
-
-    [Required]
-    public byte[] PasswordSalt { get; set; } = [];
     public DateOnly DateOfBirth { get; set; }
     public string? KnownAs { get; set; }
     public DateTime Created { get; set; } = DateTime.UtcNow;
@@ -34,6 +24,7 @@ public class AppUser
 
     public List<Message> MessagesSent { get; set; } = [];
     public List<Message> MessageReceived { get; set; } = [];
+    public ICollection<AppUserRole> UserRoles { get; set; } = [];
 
     // public int GetAge()
     // {

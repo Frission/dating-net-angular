@@ -1,6 +1,8 @@
 using Backend.Data;
+using Backend.Entities;
 using Backend.Errors;
 using Backend.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,8 +47,9 @@ var services = scope.ServiceProvider;
 try
 {
     var dataContext = services.GetRequiredService<DataContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
     await dataContext.Database.MigrateAsync();
-    await Seed.SeedUsers(dataContext);
+    await Seed.SeedUsers(userManager);
 }
 catch (Exception ex)
 {

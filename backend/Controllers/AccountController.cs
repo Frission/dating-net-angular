@@ -11,8 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers;
 
-public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
-    : BaseApiController
+public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseApiController
 {
     private readonly DataContext _context = context;
     private readonly ITokenService _tokenService = tokenService;
@@ -28,11 +27,7 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
         var user = _mapper.Map<AppUser>(credentials);
 
-        var computedHash = new ComputedHash(credentials.Password);
-
         user.UserName = credentials.Username.ToLower();
-        user.PasswordHash = computedHash.Hash;
-        user.PasswordSalt = computedHash.Salt;
 
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
@@ -53,17 +48,8 @@ public class AccountController(DataContext context, ITokenService tokenService, 
             .Users.Include(user => user.Photos)
             .SingleOrDefaultAsync(user => user.UserName == credentials.Username);
 
-        if (user == null)
+        if (user == null || user.UserName == null)
             return Unauthorized(new { Errors = new { User = "User not found." } });
-
-        var computedHash = new ComputedHash(credentials.Password, user.PasswordSalt);
-
-        if (!ComputedHash.Compare(computedHash.Hash, user.PasswordHash))
-        {
-            return Unauthorized(
-                new { Errors = new { Credentials = "Username or password is incorrect." } }
-            );
-        }
 
         return new UserDTO
         {
@@ -77,6 +63,6 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
     private async Task<bool> UserExists(string username)
     {
-        return await _context.Users.AnyAsync(user => user.UserName.Equals(username.ToLower()));
+        return await _context.Users.AnyAsync(user => (user.UserName ?? "").Equals(username.ToLower()));
     }
 }
