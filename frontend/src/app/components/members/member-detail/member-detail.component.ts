@@ -20,7 +20,7 @@ import { Message } from "../../../model/response/Message"
 export class MemberDetailComponent implements OnInit {
     @ViewChild("memberTabs", { static: true }) memberTabs?: TabsetComponent
     activeTab?: TabDirective
-    member: Member = {} as Member;
+    member: Member = {} as Member
     images: Array<GalleryItem> = []
     messages: Array<Message> = []
 
@@ -31,22 +31,12 @@ export class MemberDetailComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.route.data.subscribe({
-            next: (data) => (this.member = data["member"]),
-        })
-
-        this.route.queryParams.subscribe({
-            next: (params) => {
-                if (params["tab"]) {
-                    this.selectTab(params["tab"])
-                }
-            },
-        })
-
+        this.loadMemberFromResolver()
+        this.getTabStateFromQuery()
         this.getImages()
     }
 
-    selectTab(heading: "Messages") {
+    protected selectTab(heading: "Messages") {
         if (this.memberTabs) {
             const tab = this.memberTabs.tabs.find((tab) => tab.heading == heading)
             console.log(this.memberTabs)
@@ -56,30 +46,14 @@ export class MemberDetailComponent implements OnInit {
         }
     }
 
-    onTabActivated(data: TabDirective) {
+    protected onTabActivated(data: TabDirective) {
         this.activeTab = data
         if (this.activeTab.heading == "Messages") {
             this.loadMessages()
         }
     }
 
-    // loadMember() {
-    //     const username = this.route.snapshot.paramMap.get("username")
-
-    //     if (username == null || typeof username !== "string") {
-    //         console.warn("could not find the username parameter")
-    //         return
-    //     }
-
-    //     this.memberService.getMember(username).subscribe({
-    //         next: (user) => {
-    //             this.member = user
-    //             this.getImages()
-    //         },
-    //     })
-    // }
-
-    loadMessages() {
+    private loadMessages() {
         if (this.member?.userName) {
             this.messagesService.getMessageThread(this.member.userName).subscribe({
                 next: (messages) => (this.messages = messages),
@@ -87,10 +61,32 @@ export class MemberDetailComponent implements OnInit {
         }
     }
 
-    getImages() {
+    private getImages() {
         if (this.member == null) return
         for (const photo of this.member.photos) {
             this.images.push(new ImageItem({ src: photo.url, thumb: photo.url }))
         }
+    }
+
+    private getTabStateFromQuery() {
+        this.route.queryParams.subscribe({
+            next: (params) => {
+                if (params["tab"]) {
+                    this.selectTab(params["tab"])
+                }
+            },
+        })
+    }
+
+    private loadMemberFromResolver() {
+        this.route.data.subscribe({
+            next: (data: { member?: Member }) => {
+                if (data.member) {
+                    this.member = data["member"]
+                } else {
+                    console.warn("member information missing")
+                }
+            },
+        })
     }
 }

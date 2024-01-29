@@ -8,7 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
-public class MessagesController(IUserRepository userRepository, IMessageRepository messageRepository, IMapper mapper) : BaseApiController
+public class MessagesController(
+    IUserRepository userRepository,
+    IMessageRepository messageRepository,
+    IMapper mapper
+) : BaseApiController
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IMessageRepository _messageRepository = messageRepository;
@@ -25,7 +29,9 @@ public class MessagesController(IUserRepository userRepository, IMessageReposito
         }
 
         var sender = await _userRepository.GetUserByUsernameAsync(username);
-        var recipient = await _userRepository.GetUserByUsernameAsync(createMessageDTO.RecipientUsername);
+        var recipient = await _userRepository.GetUserByUsernameAsync(
+            createMessageDTO.RecipientUsername
+        );
 
         if (recipient == null || sender == null)
         {
@@ -54,13 +60,22 @@ public class MessagesController(IUserRepository userRepository, IMessageReposito
     }
 
     [HttpGet]
-    public async Task<ActionResult<PagedList<MessageDTO>>> GetMessagesForUser([FromQuery] MessageParams messageParams)
+    public async Task<ActionResult<PagedList<MessageDTO>>> GetMessagesForUser(
+        [FromQuery] MessageParams messageParams
+    )
     {
         messageParams.Username = User.GetUsername();
 
         var messages = await _messageRepository.GetMessagesForUser(messageParams);
 
-        Response.AddPaginationHeader(new PaginationHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages));
+        Response.AddPaginationHeader(
+            new PaginationHeader(
+                messages.CurrentPage,
+                messages.PageSize,
+                messages.TotalCount,
+                messages.TotalPages
+            )
+        );
 
         return messages;
     }
@@ -71,5 +86,18 @@ public class MessagesController(IUserRepository userRepository, IMessageReposito
         var currentUsername = User.GetUsername();
 
         return Ok(await _messageRepository.GetMessageThread(currentUsername, username));
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteMessage(int id)
+    {
+        var username = User.GetUsername();
+        var message = await _messageRepository.GetMessage(id);
+
+        if (message == null)
+            return NotFound();
+
+        if (message.Sender.UserName != username && message.Recipient.UserName != username)
+            return Unauthorized();
     }
 }
