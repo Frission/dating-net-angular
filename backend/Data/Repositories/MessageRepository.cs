@@ -34,27 +34,20 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
 
         query = messageParams.Container switch
         {
-            "Inbox" => query.Where(u => u.RecipientUsername == messageParams.Username),
-            "Outbox" => query.Where(u => u.SenderUsername == messageParams.Username),
+            "Inbox" => query.Where(u => u.RecipientUsername == messageParams.Username && u.RecipientDeleted == false),
+            "Outbox" => query.Where(u => u.SenderUsername == messageParams.Username && u.SenderDeleted == false),
             _
                 => query.Where(u =>
-                    u.RecipientUsername == messageParams.Username && u.DateRead == null
+                    u.RecipientUsername == messageParams.Username && u.DateRead == null && u.RecipientDeleted == false
                 )
         };
 
         var messages = query.ProjectTo<MessageDTO>(_mapper.ConfigurationProvider);
 
-        return await PagedList<MessageDTO>.CreateAsync(
-            messages,
-            messageParams.PageNumber,
-            messageParams.PageSize
-        );
+        return await PagedList<MessageDTO>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
     }
 
-    public async Task<IEnumerable<MessageDTO>> GetMessageThread(
-        string currentUserName,
-        string recipientUsername
-    )
+    public async Task<IEnumerable<MessageDTO>> GetMessageThread(string currentUserName, string recipientUsername)
     {
         var messages = await _context
             .Messages.Include(message => message.Sender)
@@ -64,10 +57,12 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
             .Where(message =>
                 (
                     message.RecipientUsername == currentUserName
+                    && message.RecipientDeleted == false
                     && message.SenderUsername == recipientUsername
                 )
                 || (
                     message.RecipientUsername == recipientUsername
+                    && message.SenderDeleted == false
                     && message.SenderUsername == currentUserName
                 )
             )
@@ -75,9 +70,7 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
             .ToListAsync();
 
         var unreadMessages = messages
-            .Where(message =>
-                message.DateRead == null && message.RecipientUsername == currentUserName
-            )
+            .Where(message => message.DateRead == null && message.RecipientUsername == currentUserName)
             .ToList();
 
         if (unreadMessages.Count > 0)

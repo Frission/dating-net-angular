@@ -99,5 +99,22 @@ public class MessagesController(
 
         if (message.Sender.UserName != username && message.Recipient.UserName != username)
             return Unauthorized();
+
+        if (message.SenderUsername == username)
+            message.SenderDeleted = true;
+
+        if (message.RecipientUsername == username)
+            message.RecipientDeleted = true;
+
+        // actually delete the message if both sides have deleted the message
+        if (message.SenderDeleted && message.RecipientDeleted)
+        {
+            _messageRepository.DeleteMessage(message);
+        }
+
+        if (await _messageRepository.SaveAllAsync())
+            return Ok();
+
+        return BadRequest("A problem has occurred while deleting the message.");
     }
 }
