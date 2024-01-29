@@ -13,12 +13,20 @@ export class MessagesService extends PaginatedService {
         super(httpClient)
     }
 
-    getMessages(pageNumber: number, pageSize: number, container: MessageContainer): Observable<PaginatedResult<Array<Message>>> {
+    getMessages(
+        pageNumber: number,
+        pageSize: number,
+        container: MessageContainer,
+    ): Observable<PaginatedResult<Array<Message>>> {
         let params = this.getPaginationHeaders(pageNumber, pageSize)
 
         if (container) params = params.append("container", container)
 
         return this.getPaginatedResult<Array<Message>>(this.baseUrl + "messages", params)
+    }
+
+    getMessageThread(username: string): Observable<Array<Message>> {
+        return this.httpClient.get<Array<Message>>(this.baseUrl + "messages/thread/" + username)
     }
 }
 

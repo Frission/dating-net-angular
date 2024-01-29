@@ -36,8 +36,7 @@ public class AutoMapperProfiles : Profile
                 options => options.MapFrom(source =>
                     (source.Sender.Photos.FirstOrDefault(photo => photo.IsMain) ?? new Photo { Url = null! }).Url
                 )
-            );
-        CreateMap<Message, MessageDTO>()
+            )
             .ForMember(
                 destination => destination.RecipientPhotoUrl,
                 options => options.MapFrom(source =>

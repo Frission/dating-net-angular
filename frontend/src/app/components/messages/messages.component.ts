@@ -2,12 +2,17 @@ import { Component, OnInit } from "@angular/core"
 import { Message } from "../../model/response/Message"
 import { Pagination } from "../../model/response/Pagination"
 import { MessageContainer, MessagesService } from "../../services/messages.service"
-import { PageChangedEvent } from "ngx-bootstrap/pagination"
+import { PageChangedEvent, PaginationModule } from "ngx-bootstrap/pagination"
+import { ButtonsModule } from "ngx-bootstrap/buttons"
+import { FormsModule } from "@angular/forms"
+import { TitleCasePipe } from "@angular/common"
+import { TimeagoModule } from "ngx-timeago"
+import { RouterModule } from "@angular/router"
 
 @Component({
     selector: "app-messages",
     standalone: true,
-    imports: [],
+    imports: [ButtonsModule, FormsModule, TitleCasePipe, TimeagoModule, PaginationModule, RouterModule],
     templateUrl: "./messages.component.html",
     styleUrl: "./messages.component.scss",
 })
