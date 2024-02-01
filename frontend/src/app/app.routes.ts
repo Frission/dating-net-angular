@@ -7,6 +7,8 @@ import { authGuard } from "./guards/auth.guard"
 import { preventUnsavedChangesGuard } from "./guards/prevent-unsaved-changes.guard"
 import { memberDetailedResolver } from "./resolvers/member-detailed.resolver"
 import { adminGuard } from "./guards/admin.guard"
+import { importProvidersFrom } from "@angular/core"
+import { ModalModule } from "ngx-bootstrap/modal"
 
 export const routes: Routes = [
     { path: "", component: HomeComponent },
@@ -48,6 +50,7 @@ export const routes: Routes = [
                 canActivate: [adminGuard],
                 loadComponent: () =>
                     import("./components/admin/admin-panel/admin-panel.component").then((c) => c.AdminPanelComponent),
+                providers: [importProvidersFrom(ModalModule.forRoot())],
             },
         ],
     },

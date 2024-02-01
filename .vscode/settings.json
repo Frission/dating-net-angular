@@ -5,7 +5,8 @@
             "externalTemplate": true
         },
         "angular-component": {
-            "skipChangeDetectionOnPush": true
+            "skipChangeDetectionOnPush": true,
+            "skipDisplayBlock": true
         },
         "angular-page": {
             "skipChangeDetectionOnPush": true

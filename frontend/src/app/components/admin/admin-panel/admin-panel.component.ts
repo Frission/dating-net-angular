@@ -1,10 +1,14 @@
 import { Component } from "@angular/core"
+import { TabsModule } from "ngx-bootstrap/tabs"
+import { HasRoleDirective } from "../../../directives/has-role.directive"
+import { UserManagementComponent } from "../user-management/user-management.component"
+import { PhotoManagementComponent } from "../photo-management/photo-management.component"
 
 @Component({
     selector: "app-admin-panel",
     standalone: true,
-    imports: [],
     templateUrl: "./admin-panel.component.html",
     styleUrl: "./admin-panel.component.scss",
+    imports: [TabsModule, HasRoleDirective, UserManagementComponent, PhotoManagementComponent],
 })
 export class AdminPanelComponent {}
