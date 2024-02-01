@@ -24,6 +24,8 @@ public class DataContext(DbContextOptions options)
     {
         base.OnModelCreating(builder);
 
+        builder.Entity<AppUser>().Property(user => user.Id).ValueGeneratedOnAdd();
+
         builder
             .Entity<AppUser>()
             .HasMany(user => user.UserRoles)

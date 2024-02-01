@@ -6,6 +6,7 @@ import { TestErrorComponent } from "./errors/test-error/test-error.component"
 import { authGuard } from "./guards/auth.guard"
 import { preventUnsavedChangesGuard } from "./guards/prevent-unsaved-changes.guard"
 import { memberDetailedResolver } from "./resolvers/member-detailed.resolver"
+import { adminGuard } from "./guards/admin.guard"
 
 export const routes: Routes = [
     { path: "", component: HomeComponent },
@@ -41,6 +42,12 @@ export const routes: Routes = [
                 path: "messages",
                 loadComponent: () =>
                     import("./components/messages/messages.component").then((c) => c.MessagesComponent),
+            },
+            {
+                path: "admin",
+                canActivate: [adminGuard],
+                loadComponent: () =>
+                    import("./components/admin/admin-panel/admin-panel.component").then((c) => c.AdminPanelComponent),
             },
         ],
     },

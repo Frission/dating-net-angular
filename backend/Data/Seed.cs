@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using Backend.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +7,7 @@ namespace Backend.Data;
 
 public class Seed
 {
-    public static async Task SeedUsers(UserManager<AppUser> userManager)
+    public static async Task SeedUsers(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
     {
         if (await userManager.Users.AnyAsync())
             return;
@@ -27,12 +25,27 @@ public class Seed
             return;
         }
 
+        var roles = new List<AppRole>
+        {
+            new() { Name = "Member" },
+            new() { Name = "Admin" },
+            new() { Name = "Moderator" }
+        };
+
+        foreach (var role in roles)
+        {
+            await roleManager.CreateAsync(role);
+        }
+
+        var admin = new AppUser { UserName = "admin", SecurityStamp = Guid.NewGuid().ToString() };
+        await userManager.CreateAsync(admin, "Pa$$w0rd");
+        await userManager.AddToRolesAsync(admin, ["Admin", "Moderator"]);
+
         foreach (var user in users)
         {
-            using var hmac = new HMACSHA512();
-
             user.UserName = user.UserName?.ToLower();
             await userManager.CreateAsync(user, "Pa$$w0rd");
+            await userManager.AddToRoleAsync(user, "Member");
         }
     }
 }

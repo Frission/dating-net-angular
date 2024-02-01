@@ -61,6 +61,20 @@ export class AccountService extends BaseService {
     }
 
     setCurrentUser(user: User) {
+        const roles = this.getDecodedToken(user.token).role
+
+        if (roles != null) {
+            if (Array.isArray(roles)) {
+                user.roles = roles
+            } else {
+                user.roles = [roles]
+            }
+        }
+
         this._currentUser.next(user)
+    }
+
+    getDecodedToken(token: string) {
+        return JSON.parse(atob(token.split(".")[1]))
     }
 }

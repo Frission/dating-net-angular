@@ -6,14 +6,16 @@ using Backend.Data.Helpers;
 using Backend.DTOs;
 using Backend.Entities;
 using Backend.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers;
 
-public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseApiController
+public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper)
+    : BaseApiController
 {
-    private readonly DataContext _context = context;
+    private readonly UserManager<AppUser> _userManager = userManager;
     private readonly ITokenService _tokenService = tokenService;
     private readonly IMapper _mapper = mapper;
 
@@ -29,14 +31,23 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
         user.UserName = credentials.Username.ToLower();
 
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
+        var result = await _userManager.CreateAsync(user);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors.ToString());
+        }
+
+        var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+
+        if (!roleResult.Succeeded)
+            BadRequest(result.Errors.ToString());
 
         return new UserDTO
         {
             Username = user.UserName,
             KnownAs = user.KnownAs,
-            Token = _tokenService.CreateToken(user),
+            Token = await _tokenService.CreateToken(user),
             Gender = user.Gender
         };
     }
@@ -44,18 +55,23 @@ public class AccountController(DataContext context, ITokenService tokenService, 
     [HttpPost("login")]
     public async Task<ActionResult<UserDTO>> LoginUser(LoginDTO credentials)
     {
-        var user = await _context
+        var user = await _userManager
             .Users.Include(user => user.Photos)
             .SingleOrDefaultAsync(user => user.UserName == credentials.Username);
 
         if (user == null || user.UserName == null)
             return Unauthorized(new { Errors = new { User = "User not found." } });
 
+        var pwMatches = await _userManager.CheckPasswordAsync(user, credentials.Password);
+
+        if (!pwMatches)
+            return Unauthorized(new { Errors = new { User = "User not found." } });
+
         return new UserDTO
         {
             Username = user.UserName,
             KnownAs = user.KnownAs,
-            Token = _tokenService.CreateToken(user),
+            Token = await _tokenService.CreateToken(user),
             PhotoUrl = user.Photos.FirstOrDefault(photo => photo.IsMain)?.Url,
             Gender = user.Gender
         };
@@ -63,6 +79,6 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
     private async Task<bool> UserExists(string username)
     {
-        return await _context.Users.AnyAsync(user => (user.UserName ?? "").Equals(username.ToLower()));
+        return await _userManager.Users.AnyAsync(user => (user.UserName ?? "").Equals(username.ToLower()));
     }
 }

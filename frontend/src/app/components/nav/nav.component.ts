@@ -7,11 +7,12 @@ import { AccountService } from "../../services/account.service"
 import { Router, RouterModule } from "@angular/router"
 import { ToastrService } from "ngx-toastr"
 import { environment } from "../../../environments/environment"
+import { HasRoleDirective } from "../../directives/has-role.directive"
 
 @Component({
     selector: "app-nav",
     standalone: true,
-    imports: [FormsModule, BsDropdownModule, AsyncPipe, RouterModule, TitleCasePipe],
+    imports: [FormsModule, BsDropdownModule, AsyncPipe, RouterModule, TitleCasePipe, HasRoleDirective],
     templateUrl: "./nav.component.html",
     styleUrl: "./nav.component.scss",
 })
@@ -33,11 +34,11 @@ export class NavComponent implements OnInit {
 
     ngOnInit(): void {
         this.accountService.currentUser$.subscribe({
-            next: user => {
-                if(user) {
+            next: (user) => {
+                if (user) {
                     this.photoUrl = user.photoUrl
                 }
-            }
+            },
         })
     }
 
@@ -48,7 +49,7 @@ export class NavComponent implements OnInit {
                 next: () => {
                     this.router.navigateByUrl("/members")
                     this.toastr.success("Successfully logged in!")
-                }
+                },
             })
     }
 
